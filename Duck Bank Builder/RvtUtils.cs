@@ -43,6 +43,9 @@ namespace Duck_Bank_Builder
                     List<CylindricalFace> uniqueCylFaces = new List<CylindricalFace>();
                     var origins_count = origins.Count() / 2;
 
+                    Data.startptsExSt_ = new Dictionary<string, XYZ>();
+                    Data.endptsExSt_ = new Dictionary<string, XYZ>();
+
                     // keep only unique cylinder axes (avoid duplicate faces)
                     foreach (var face in origins)
                     {
@@ -109,8 +112,7 @@ namespace Duck_Bank_Builder
 
                         Data.startpts = new XYZ[Data.row_points, Data.col_points];
                         Data.endpts = new XYZ[Data.row_points, Data.col_points];
-                        Data.startptsExSt_ = new Dictionary<string, XYZ>();
-                        Data.endptsExSt_ = new Dictionary<string, XYZ>();
+                    
 
                         for (int i = 0; i < Data.row_points; i++)
                         {
@@ -167,20 +169,20 @@ namespace Duck_Bank_Builder
                         tx.Commit();
                     }
 
-                    var sb = new StringBuilder();
+                    //var sb = new StringBuilder();
 
-                    for (int i = 0; i < Data.row_points; i++)
-                    {
-                        for (int j = 0; j < Data.col_points; j++)
-                        {
-                            sb.AppendLine($"Start Point[{i},{j}]: {Data.startpts[i, j]}");
-                            sb.AppendLine($"End Point[{i},{j}]: {Data.endpts[i, j]}");
-                            // Just for testing
-                            //TaskDialog.Show("Points", $"Start Point[{i},{j}]: {Data.startpts[i, j]}\nEnd Point[{i},{j}]: {Data.endpts[i, j]}");
+                    //for (int i = 0; i < Data.row_points; i++)
+                    //{
+                    //    for (int j = 0; j < Data.col_points; j++)
+                    //    {
+                    //        sb.AppendLine($"Start Point[{i},{j}]: {Data.startpts[i, j]}");
+                    //        sb.AppendLine($"End Point[{i},{j}]: {Data.endpts[i, j]}");
+                    //        // Just for testing
+                    //        //TaskDialog.Show("Points", $"Start Point[{i},{j}]: {Data.startpts[i, j]}\nEnd Point[{i},{j}]: {Data.endpts[i, j]}");
 
-                        }
-                    }
-                    sb.AppendLine($"Total Points: \n {Data.points_count}, {Data.row_points} * {Data.col_points}");
+                    //    }
+                    //}
+                    //sb.AppendLine($"Total Points: \n {Data.points_count}, {Data.row_points} * {Data.col_points}");
                     //TaskDialog.Show("Points", sb.ToString());
                 }
             }
