@@ -184,9 +184,6 @@ namespace Duck_Bank_Builder
                 {
                     string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
 
-
-                    TaskDialog.Show("Export", $"Data exported to:\n{path}");
-
                     bool status = true;
                     Schema schema = EextensibleStorage.CreateSchema();
                     Entity Read_entity = EextensibleStorage.ReadInstallationData(duct);
@@ -198,7 +195,8 @@ namespace Duck_Bank_Builder
                     Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
                     Data.listST.Add(Read_entity_);
 
-                    EextensibleStorage.ExportEntityToXml(Read_entity_,path);
+                    EextensibleStorage.ExportEntityToXml(Read_entity_, path);
+                    TaskDialog.Show("Export", $"Data exported to:\n{path}");
 
                     //Entity entity = duct.GetEntity(schema);
                     //duct.SetEntity(entity);
