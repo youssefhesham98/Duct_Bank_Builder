@@ -195,21 +195,21 @@ namespace Duck_Bank_Builder
             {
                 if (duct != null)
                 {
-                    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+                    //string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
 
                     bool status = true;
                     Schema schema = EextensibleStorage.CreateSchema();
                     Entity Read_entity = EextensibleStorage.ReadInstallationData(duct);
-                    if (!Read_entity.IsValid())
-                    {
-                        TaskDialog.Show("Export", "No extensible storage found on this element.");
-                    }
+                    //if (!Read_entity.IsValid())
+                    //{
+                    //    TaskDialog.Show("Export", "No extensible storage found on this element.");
+                    //}
                     EextensibleStorage.WriteInstallationData(duct, count);
                     Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
-                    Data.listST.Add(Read_entity_);
+                    //Data.listST.Add(Read_entity_);
 
-                    EextensibleStorage.ExportEntityToXml(Read_entity_, path);
-                    TaskDialog.Show("Export", $"Data exported to:\n{path}");
+                    //EextensibleStorage.ExportEntityToXml(Read_entity_, path);
+                    //TaskDialog.Show("Export", $"Data exported to:\n{path}");
 
                     //Entity entity = duct.GetEntity(schema);
                     //duct.SetEntity(entity);

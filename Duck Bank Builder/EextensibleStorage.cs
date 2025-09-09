@@ -26,14 +26,15 @@ namespace Duck_Bank_Builder
             sb.SetWriteAccessLevel(AccessLevel.Public);
             //sb.SetVendorId("YOUR_VENDOR_ID");
             sb.SetDocumentation("Schema for storing installation data on elements");
-            //sb.AddArrayField("CoreValues", typeof(string));
+            sb.AddArrayField("CoreValues", typeof(bool));
             //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
             sb.SetSchemaName("DuckBuilderSchema");
             sb.AddSimpleField("Author", typeof(string));
             sb.AddSimpleField("Version", typeof(int));
             sb.AddSimpleField("CreatedOn", typeof(string));
             sb.AddSimpleField("ElemedID", typeof(ElementId));
-            sb.AddSimpleField("ElementOrigin", typeof(XYZ));
+            //FieldBuilder location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
+            //location.//add units
             sb.AddSimpleField("Core_01", typeof(string));
             sb.AddSimpleField("Core_02", typeof(string));
             sb.AddSimpleField("Core_03", typeof(string));
@@ -60,8 +61,20 @@ namespace Duck_Bank_Builder
             //sb.AddSimpleField("Status", typeof(string));
             //sb.AddSimpleField("Installer", typeof(string));
             //sb.AddSimpleField("LastUpdated", typeof(string));
+            Schema vv = null;
+            try
+            {
+                vv = sb.Finish();
 
-            return sb.Finish();
+            }
+            catch (Exception)
+            {
+
+                
+            }
+
+
+            return vv;
         }
 
         public static void WriteInstallationData(Element element,int pipeCount)
@@ -77,7 +90,7 @@ namespace Duck_Bank_Builder
             entity.Set("Version", 1);
             entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             entity.Set("ElemedID", element.Id);
-            entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
+            //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
             //entity.Set("Core_03", status);
@@ -108,17 +121,34 @@ namespace Duck_Bank_Builder
 
             bool status = false;
             // Loop through 20 core fields
-            for (int i = 1; i <= 20; i++)
+            try
             {
-                var pt = Data.startpts_[i];
-                var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                string fieldName = $"Core_{i:00}";
-                if (status = i <= pipeCount) // true if within pipeCount, false otherwise
+                for (int i = 1; i <= 20; i++)
                 {
-                    var value = $"{key}_{status}_{(element.Location as LocationPoint).Point}";
-                    entity.Set(fieldName, value);
-                } 
+                    var pt = Data.startpts_[i];
+                    var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                    string fieldName = $"Core_{i:00}";
+                    var pipe = Data.Pipes[i];
+                    if (pipe != null) // true if within pipeCount, false otherwise
+                    {
+                        status = true;
+                        var value = $"{key}_{status}";
+                        ///*{(element.Location as LocationPoint).Point}*
+                        entity.Set(fieldName, value);
+                    }
+                    else
+                    {
+                        status = false;
+                        var value = $"{key}_{status}";
+                        entity.Set(fieldName, value);
+                    }
+                }
             }
+            catch (Exception)
+            {
+
+            }
+            
 
             //entity.Set("Status", "In Progress");
             //entity.Set("Installer", "John Doe");
@@ -147,7 +177,7 @@ namespace Duck_Bank_Builder
                 int version = entity.Get<int>("Version");
                 string createdOn = entity.Get<string>("CreatedOn");
                 ElementId elementid = entity.Get<ElementId>("ElemedID");
-                XYZ origin = entity.Get<XYZ>("ElementOrigin");
+               // XYZ origin = entity.Get<XYZ>("ElementOrigin");
                 string core_01 = entity.Get<string>("Core_01");
                 string core_02 = entity.Get<string>("Core_02");
                 string core_03 = entity.Get<string>("Core_03");
@@ -182,7 +212,7 @@ namespace Duck_Bank_Builder
                 sb.AppendLine($"Version: {version}");
                 sb.AppendLine($"Created On: {createdOn}");
                 sb.AppendLine($"ElementId: {elementid}");
-                sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
+                //sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
                 sb.AppendLine();
                 sb.AppendLine("Core Values:");
                 sb.AppendLine($"Core_01: {core_01}");
