@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using static Autodesk.Revit.DB.SpecTypeId;
 
 namespace Duck_Bank_Builder
 {
@@ -17,7 +19,7 @@ namespace Duck_Bank_Builder
     {
         public static void CreatePipes(Document doc, UIDocument uidoc, PipingSystemType systemType, PipeType pipeType, int userselection)
         {
-            Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
+            Autodesk.Revit.DB.Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
             Element element = doc.GetElement(pickedRef);
             Data.Beams.Add(element);
 
@@ -172,22 +174,37 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static void CreateDB(Document doc, UIDocument uidoc/*,List<Element> beams,int count*/)
+        public static void CreateDB(List<Element> beams,int count)
         {
-            Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
-            Element element = doc.GetElement(pickedRef);
-            //foreach (var duct in beams)
-            //{
-            //    if (duct != null)
-            //    {2
-                    //bool status = true;
+            //Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
+            //Element element = doc.GetElement(pickedRef);
+            foreach (var duct in beams)
+            {
+                if (duct != null)
+                {
+                    string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+
+
+                    TaskDialog.Show("Export", $"Data exported to:\n{path}");
+
+                    bool status = true;
                     Schema schema = EextensibleStorage.CreateSchema();
-                    Entity entity = EextensibleStorage.WriteInstallationData(element,/*count,*/schema);
-                    Data.listST.Add(entity);
-                    var sb = EextensibleStorage.ReadInstallationData(element,schema);
-                    TaskDialog.Show("Entity Data", sb.ToString());
-            //    }
-            //}
+                    Entity Read_entity = EextensibleStorage.ReadInstallationData(duct);
+                    if (!Read_entity.IsValid())
+                    {
+                        TaskDialog.Show("Export", "No extensible storage found on this element.");
+                    }
+                    EextensibleStorage.WriteInstallationData(duct, count);
+                    Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
+                    Data.listST.Add(Read_entity_);
+
+                    EextensibleStorage.ExportEntityToXml(Read_entity_,path);
+
+                    //Entity entity = duct.GetEntity(schema);
+                    //duct.SetEntity(entity);
+                    //TaskDialog.Show("Entity Data", sb.ToString());
+                }
+            }
         }
     }
 

@@ -8,12 +8,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Duck_Bank_Builder
 {
     public class EextensibleStorage
     {
-        private static Guid SchemaGuid = new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB");
+        public static Guid SchemaGuid = new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB");
 
         public static Schema CreateSchema()
         {
@@ -23,6 +24,10 @@ namespace Duck_Bank_Builder
             SchemaBuilder sb = new SchemaBuilder(SchemaGuid);
             sb.SetReadAccessLevel(AccessLevel.Public);
             sb.SetWriteAccessLevel(AccessLevel.Public);
+            //sb.SetVendorId("YOUR_VENDOR_ID");
+            sb.SetDocumentation("Schema for storing installation data on elements");
+            //sb.AddArrayField("CoreValues", typeof(string));
+            //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
             sb.SetSchemaName("DuckBuilderSchema");
             sb.AddSimpleField("Author", typeof(string));
             sb.AddSimpleField("Version", typeof(int));
@@ -50,7 +55,7 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Core_19", typeof(string));
             sb.AddSimpleField("Core_20", typeof(string));
 
-            //sb.SetVendorId("YOUR_VENDOR_ID");
+
             // Add fields
             //sb.AddSimpleField("Status", typeof(string));
             //sb.AddSimpleField("Installer", typeof(string));
@@ -59,20 +64,20 @@ namespace Duck_Bank_Builder
             return sb.Finish();
         }
 
-        public static Entity WriteInstallationData(Element element,/*int pipeCount,*/Schema schema)
+        public static void WriteInstallationData(Element element,int pipeCount)
         {
-            //Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
-            //if (schema == null)
-            //{
-            //    schema = CreateSchema();
-            //}
-        
+            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            if (schema == null)
+            {
+                schema = CreateSchema();
+            }
+
             Entity entity = new Entity(schema);
             entity.Set("Author", "EDECS BIM UNIT");
-            //entity.Set("Version", 1);
-            //entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm")); 
-            //entity.Set("ElemedID", element.Id);
-            //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
+            entity.Set("Version", 1);
+            entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+            entity.Set("ElemedID", element.Id);
+            entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
             //entity.Set("Core_03", status);
@@ -108,11 +113,11 @@ namespace Duck_Bank_Builder
                 var pt = Data.startpts_[i];
                 var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
                 string fieldName = $"Core_{i:00}";
-                //if (status = i <= pipeCount) // true if within pipeCount, false otherwise
-                //{
+                if (status = i <= pipeCount) // true if within pipeCount, false otherwise
+                {
                     var value = $"{key}_{status}_{(element.Location as LocationPoint).Point}";
                     entity.Set(fieldName, value);
-                //} 
+                } 
             }
 
             //entity.Set("Status", "In Progress");
@@ -125,13 +130,13 @@ namespace Duck_Bank_Builder
                 element.SetEntity(entity);
                 t.Commit();
             }
-            return entity;
+            //return entity;
         }
 
-        public static StringBuilder ReadInstallationData(Element element,Schema schema)
+        public static Entity ReadInstallationData(Element element)
         {
-            //Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
-            //if (schema == null) return;
+            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            if (schema == null) TaskDialog.Show("Error","Schema Failed.");
 
             StringBuilder sb = new StringBuilder();
 
@@ -139,10 +144,10 @@ namespace Duck_Bank_Builder
             if (entity.IsValid())
             {
                 string author = entity.Get<string>("Author");
-                //int version = entity.Get<int>("Version");
-                //string createdOn = entity.Get<string>("CreatedOn");
-                //ElementId elementid = entity.Get<ElementId>("ElemedID");
-                //XYZ origin = entity.Get<XYZ>("ElementOrigin");
+                int version = entity.Get<int>("Version");
+                string createdOn = entity.Get<string>("CreatedOn");
+                ElementId elementid = entity.Get<ElementId>("ElemedID");
+                XYZ origin = entity.Get<XYZ>("ElementOrigin");
                 string core_01 = entity.Get<string>("Core_01");
                 string core_02 = entity.Get<string>("Core_02");
                 string core_03 = entity.Get<string>("Core_03");
@@ -169,15 +174,15 @@ namespace Duck_Bank_Builder
                 //string lastUpdated = entity.Get<string>("LastUpdated");
 
                 //TaskDialog.Show("Installation Info",
-                //    $"Status: {status}\nInstaller: {installer}\nLast Updated: {lastUpdated}");
+                //$"Status: {status}\nInstaller: {installer}\nLast Updated: {lastUpdated}");
 
                 // Collect the boolean core values
-          
+
                 sb.AppendLine($"Author: {author}");
-                //sb.AppendLine($"Version: {version}");
-                //sb.AppendLine($"Created On: {createdOn}");
-                //sb.AppendLine($"ElementId: {elementid}");
-                //sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
+                sb.AppendLine($"Version: {version}");
+                sb.AppendLine($"Created On: {createdOn}");
+                sb.AppendLine($"ElementId: {elementid}");
+                sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
                 sb.AppendLine();
                 sb.AppendLine("Core Values:");
                 sb.AppendLine($"Core_01: {core_01}");
@@ -201,15 +206,61 @@ namespace Duck_Bank_Builder
                 sb.AppendLine($"Core_19: {core_19}");
                 sb.AppendLine($"Core_20: {core_20}");
 
-                //for (int i = 1; i <= 20; i++)
-                //{
-                //    string coreVal = entity.Get<string>($"Core_{i:00}");
-                //    sb.AppendLine($"  Core_{i:00}: {coreVal}");
-                //}
-                
-                //TaskDialog.Show("Extensible Storage Data", sb.ToString());
+                for (int i = 1; i <= 20; i++)
+                {
+                    string coreVal = entity.Get<string>($"Core_{i:00}");
+                    sb.AppendLine($"  Core_{i:00}: {coreVal}");
+                }
             }
-            return sb;
+            TaskDialog.Show("Extensible Storage Data", sb.ToString());
+            return entity;
+        }
+
+        public static void ExportEntityToXml(Entity entity, string filePath)
+        {
+            if (!entity.IsValid())
+                throw new InvalidOperationException("Invalid or empty entity.");
+
+            Schema schema = entity.Schema;
+            if (schema == null)
+                throw new InvalidOperationException("Schema not found.");
+
+            // Root XML element
+            XElement root = new XElement("ExtensibleStorage",
+                new XAttribute("SchemaName", schema.SchemaName),
+                new XAttribute("SchemaGUID", schema.GUID.ToString())
+            );
+
+            // Iterate all fields in schema
+            foreach (Field field in schema.ListFields())
+            {
+                string fieldName = field.FieldName;
+                Type fieldType = field.ValueType;
+
+                object value = null;
+                try
+                {
+                    // Generic Get<T> using reflection
+                    var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
+                    var generic = method.MakeGenericMethod(fieldType);
+                    value = generic.Invoke(entity, new object[] { fieldName });
+                }
+                catch
+                {
+                    value = "Unsupported type";
+                }
+
+                // Write into XML
+                root.Add(new XElement("Field",
+                    new XAttribute("Name", fieldName),
+                    new XAttribute("Type", fieldType.Name),
+                    value?.ToString() ?? "null"
+                ));
+            }
+
+            // Save to file
+            XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
+            doc.Save(filePath);
         }
     }
 }
