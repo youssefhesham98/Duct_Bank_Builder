@@ -33,8 +33,8 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Version", typeof(int));
             sb.AddSimpleField("CreatedOn", typeof(string));
             sb.AddSimpleField("ElemedID", typeof(ElementId));
-            //FieldBuilder location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
-            //location.//add units
+            var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
+            location.SetSpec(SpecTypeId.Length);
             sb.AddSimpleField("Core_01", typeof(string));
             sb.AddSimpleField("Core_02", typeof(string));
             sb.AddSimpleField("Core_03", typeof(string));
