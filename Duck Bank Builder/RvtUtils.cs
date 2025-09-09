@@ -42,6 +42,139 @@ namespace Duck_Bank_Builder
 
             //int beamIndex = 0;
 
+            using (Transaction tx = new Transaction(doc, "Create Pipes"))
+            {
+                tx.Start();
+
+                foreach (var reff in pickedRefs)
+                {
+                    Element elem = doc.GetElement(reff);
+                    foreach (var geometryinstance in elem.get_Geometry(new Options()).OfType<GeometryInstance>())
+                    {
+                        Solid solid = geometryinstance.GetInstanceGeometry().OfType<Solid>().FirstOrDefault(s => s.Volume > 0);
+                        var origins = solid.Faces.OfType<CylindricalFace>();
+                        List<CylindricalFace> uniqueCylFaces = new List<CylindricalFace>();
+                        var origins_count = origins.Count() / 2;
+
+                        // keep only unique cylinder axes (avoid duplicate faces)
+                        foreach (var face in origins)
+                        {
+                            XYZ origin = face.Origin;
+                            XYZ axis = face.Axis.Normalize();
+
+                            bool exists = uniqueCylFaces.Any(f =>
+                                f.Origin.IsAlmostEqualTo(origin, tolerance) &&
+                                f.Axis.Normalize().IsAlmostEqualTo(axis, tolerance));
+
+                            if (!exists)
+                            {
+                                uniqueCylFaces.Add(face);
+                            }
+                        }
+
+                        foreach (CylindricalFace cylFace in uniqueCylFaces)
+                        {
+                            XYZ axisDir = cylFace.Axis.Normalize();
+                            XYZ origin = cylFace.Origin;
+
+                            // get the param bounds of the cylinder
+                            BoundingBoxUV bb = cylFace.GetBoundingBox();
+                            UV min = bb.Min;
+                            UV max = bb.Max;
+
+                            // axis points at both ends
+                            XYZ axisStart = origin + axisDir * min.V;
+                            XYZ axisEnd = origin + axisDir * max.V;
+
+                            startorigins.Add(axisStart);
+                            endorigins.Add(axisEnd);
+
+                            // Sort startorigins by X, then by Y
+                            startorigins = startorigins
+                                .OrderBy(p => p.Z)
+                                .ThenBy(p => p.Y)
+                                .ToList();
+
+                            // Sort endorigins by X, then by Y
+                            endorigins = endorigins
+                                .OrderBy(p => p.Z)
+                                .ThenBy(p => p.Y)
+                                .ToList();
+
+                            // Unique Z values in startorigins
+                            int uniqueStartZCount = startorigins
+                                .Select(p => Math.Round(p.Z, 6)) // round to avoid floating-point noise
+                                .Distinct()
+                                .Count();
+
+                            // Unique Z values in endorigins
+                            int uniqueEndZCount = endorigins
+                                .Select(p => Math.Round(p.Z, 6))
+                                .Distinct()
+                                .Count();
+
+                            Data.points_count = startorigins.Count;
+                            Data.row_points = uniqueStartZCount;
+                            Data.col_points = Data.points_count / uniqueStartZCount;
+
+                            Data.startpts = new XYZ[Data.row_points, Data.col_points];
+                            Data.endpts = new XYZ[Data.row_points, Data.col_points];
+
+
+                            for (int i = 0; i < Data.row_points; i++)
+                            {
+                                for (int j = 0; j < Data.col_points; j++)
+                                {
+                                    int index = i * Data.col_points + j; // calculate 1D index
+                                    Data.startpts[i, j] = startorigins[index];
+                                    Data.startptsExSt_[$"{i}_{j}"] = startorigins[index];
+                                }
+                            }
+
+                            for (int i = 0; i < Data.row_points; i++)
+                            {
+                                for (int j = 0; j < Data.col_points; j++)
+                                {
+                                    int index = i * Data.col_points + j; // calculate 1D index
+                                    Data.endpts[i, j] = endorigins[index];
+                                    Data.endptsExSt_[$"{i}_{j}"] = endorigins[index];
+                                }
+                            }
+                            for (int i = 0; i < startorigins.Count; i++)
+                            {
+                                Data.startpts_[i + 1] = startorigins[i];
+                            }
+                            for (int i = 0; i < endorigins.Count; i++)
+                            {
+                                Data.endpts_[i + 1] = endorigins[i];
+                            }
+                        }
+
+                        Level level = new FilteredElementCollector(doc)
+                            .OfClass(typeof(Level))
+                            .Cast<Level>()
+                            .OrderBy(l => l.Elevation)
+                            .FirstOrDefault();
+
+                        if (pipeType == null || systemType == null || level == null)
+                        {
+                            TaskDialog.Show("Error", "Could not find required PipeType, SystemType, or Level.");
+                            return;
+                        }
+
+                        // Step 6: Create pipe between start and end points
+                            //if()
+                            //{
+                            //    break;
+                            //}
+                            Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
+                            Data.Pipes.Add(pipe);
+                    }
+                }
+
+                tx.Commit();
+            }
+
             foreach (var ele in elements)
             {
                 foreach (var geometryinstance in ele.get_Geometry(new Options()).OfType<GeometryInstance>())
