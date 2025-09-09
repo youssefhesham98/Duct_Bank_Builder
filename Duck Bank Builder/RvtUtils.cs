@@ -37,7 +37,7 @@ namespace Duck_Bank_Builder
             Data.startptsExSt_ = new Dictionary<string, XYZ>();
             Data.endptsExSt_ = new Dictionary<string, XYZ>();
 
-            foreach (var ele in Data.Beams)
+            foreach (var ele in elements)
             {
                 foreach (var geometryinstance in ele.get_Geometry(new Options()).OfType<GeometryInstance>())
                 {
@@ -45,8 +45,6 @@ namespace Duck_Bank_Builder
                     var origins = solid.Faces.OfType<CylindricalFace>();
                     List<CylindricalFace> uniqueCylFaces = new List<CylindricalFace>();
                     var origins_count = origins.Count() / 2;
-
-
 
                     // keep only unique cylinder axes (avoid duplicate faces)
                     foreach (var face in origins)
