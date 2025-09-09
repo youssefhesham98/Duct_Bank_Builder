@@ -34,6 +34,9 @@ namespace Duck_Bank_Builder
             List<XYZ> endorigins = new List<XYZ>();
             double tolerance = 1e-6;
 
+            Data.startptsExSt_ = new Dictionary<string, XYZ>();
+            Data.endptsExSt_ = new Dictionary<string, XYZ>();
+
             foreach (var ele in Data.Beams)
             {
                 foreach (var geometryinstance in ele.get_Geometry(new Options()).OfType<GeometryInstance>())
@@ -43,8 +46,7 @@ namespace Duck_Bank_Builder
                     List<CylindricalFace> uniqueCylFaces = new List<CylindricalFace>();
                     var origins_count = origins.Count() / 2;
 
-                    Data.startptsExSt_ = new Dictionary<string, XYZ>();
-                    Data.endptsExSt_ = new Dictionary<string, XYZ>();
+
 
                     // keep only unique cylinder axes (avoid duplicate faces)
                     foreach (var face in origins)
