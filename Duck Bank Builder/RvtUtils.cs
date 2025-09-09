@@ -109,6 +109,8 @@ namespace Duck_Bank_Builder
 
                         Data.startpts = new XYZ[Data.row_points, Data.col_points];
                         Data.endpts = new XYZ[Data.row_points, Data.col_points];
+                        Data.startptsExSt_ = new Dictionary<string, XYZ>();
+                        Data.endptsExSt_ = new Dictionary<string, XYZ>();
 
                         for (int i = 0; i < Data.row_points; i++)
                         {
@@ -179,7 +181,7 @@ namespace Duck_Bank_Builder
                         }
                     }
                     sb.AppendLine($"Total Points: \n {Data.points_count}, {Data.row_points} * {Data.col_points}");
-                    TaskDialog.Show("Points", sb.ToString());
+                    //TaskDialog.Show("Points", sb.ToString());
                 }
             }
         }
