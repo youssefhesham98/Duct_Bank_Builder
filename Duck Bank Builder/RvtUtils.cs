@@ -37,10 +37,10 @@ namespace Duck_Bank_Builder
             Data.startpts_ = new Dictionary<int, XYZ>();
             Data.endpts_ = new Dictionary<int, XYZ>();
 
-            Dictionary<int, List<XYZ>> beamStartPoints = new Dictionary<int, List<XYZ>>();
-            Dictionary<int, List<XYZ>> beamEndPoints = new Dictionary<int, List<XYZ>>();
+            //Dictionary<int, List<XYZ>> beamStartPoints = new Dictionary<int, List<XYZ>>();
+            //Dictionary<int, List<XYZ>> beamEndPoints = new Dictionary<int, List<XYZ>>();
 
-            int beamIndex = 0;
+            //int beamIndex = 0;
 
             foreach (var ele in elements)
             {
@@ -98,10 +98,10 @@ namespace Duck_Bank_Builder
                             .ThenBy(p => p.Y)
                             .ToList();
 
-                        beamStartPoints[beamIndex] = startorigins;
-                        beamEndPoints[beamIndex] = endorigins;
+                        //beamStartPoints[beamIndex] = startorigins;
+                        //beamEndPoints[beamIndex] = endorigins;
 
-                        beamIndex++;
+                        //beamIndex++;
 
 
                         // Unique Z values in startorigins
@@ -170,23 +170,23 @@ namespace Duck_Bank_Builder
                     {
                         tx.Start();
 
-                        foreach (var kvp in beamStartPoints)
-                        {
-                            int idx = kvp.Key;
-                            if (beamStartPoints[idx].Count > userselection && beamEndPoints[idx].Count > userselection)
-                            {
-                                Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id,
-                                                        beamStartPoints[idx][userselection],
-                                                        beamEndPoints[idx][userselection]);
+                        //foreach (var kvp in beamStartPoints)
+                        //{
+                        //    int idx = kvp.Key;
+                        //    if (beamStartPoints[idx].Count > userselection && beamEndPoints[idx].Count > userselection)
+                        //    {
+                        //        Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id,
+                        //                                beamStartPoints[idx][userselection],
+                        //                                beamEndPoints[idx][userselection]);
 
-                                Data.Pipes.Add(pipe);
-                            }
-                        }
+                        //        Data.Pipes.Add(pipe);
+                        //    }
+                        //}
 
                         //for (int i = 0; i < /*origins.Count() / 2*/ userselection; i++)
                         //{
-                        //Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
-                        //Data.Pipes.Add(pipe);
+                        Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
+                        Data.Pipes.Add(pipe);
                         //}
 
                         tx.Commit();
