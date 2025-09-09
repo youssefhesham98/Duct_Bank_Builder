@@ -30,12 +30,10 @@ namespace Duck_Bank_Builder
                 Data.Beams.Add(element);
             }
 
-            List<XYZ> startorigins = new List<XYZ>();
-            List<XYZ> endorigins = new List<XYZ>();
             double tolerance = 1e-6;
 
-            Data.startpts_ = new Dictionary<int, XYZ>();
-            Data.endpts_ = new Dictionary<int, XYZ>();
+            //Data.startpts_ = new Dictionary<int, XYZ>();
+            //Data.endpts_ = new Dictionary<int, XYZ>();
 
             //Dictionary<int, List<XYZ>> beamStartPoints = new Dictionary<int, List<XYZ>>();
             //Dictionary<int, List<XYZ>> beamEndPoints = new Dictionary<int, List<XYZ>>();
@@ -85,6 +83,9 @@ namespace Duck_Bank_Builder
                             // axis points at both ends
                             XYZ axisStart = origin + axisDir * min.V;
                             XYZ axisEnd = origin + axisDir * max.V;
+
+                            List<XYZ> startorigins = new List<XYZ>();
+                            List<XYZ> endorigins = new List<XYZ>();
 
                             startorigins.Add(axisStart);
                             endorigins.Add(axisEnd);
@@ -149,11 +150,17 @@ namespace Duck_Bank_Builder
                                 Data.endpts_[i + 1] = endorigins[i];
                             }
 
+
+                        }
+
+                        // Step 6: Create pipe between start and end points
+                        if (Data.startpts_.Keys.Count > userselection && Data.endpts_.Keys.Count > userselection)
+                        {
                             Level level = new FilteredElementCollector(doc)
-                            .OfClass(typeof(Level))
-                            .Cast<Level>()
-                            .OrderBy(l => l.Elevation)
-                            .FirstOrDefault();
+                                      .OfClass(typeof(Level))
+                                      .Cast<Level>()
+                                      .OrderBy(l => l.Elevation)
+                                      .FirstOrDefault();
 
                             if (pipeType == null || systemType == null || level == null)
                             {
@@ -161,17 +168,13 @@ namespace Duck_Bank_Builder
                                 return;
                             }
 
-                            // Step 6: Create pipe between start and end points
-                            //if()
-                            //{
-                            //    break;
-                            //}
                             Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
                             Data.Pipes.Add(pipe);
+
+                            //break;
                         }
                     }
                 }
-
                 tx.Commit();
             }
 
