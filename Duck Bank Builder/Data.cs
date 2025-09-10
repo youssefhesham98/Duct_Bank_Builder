@@ -30,6 +30,7 @@ namespace Duck_Bank_Builder
         public static List<PipeType> pipetypes { get; set; }
         public static List<Entity> listST { get; set; }
         public static List<int> userselections { get; set; }
+        public static Dictionary<int, string> corelocations { get; set; }
 
         public static void Intialize()
         {
@@ -49,6 +50,7 @@ namespace Duck_Bank_Builder
             Cores_index = new Dictionary<int, Pipe>();
             Cores_Pipes = new Dictionary<Pipe, Element>();
             userselections = new List<int>();
+            corelocations = new Dictionary<int, string>();
 
 
         }

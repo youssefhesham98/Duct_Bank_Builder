@@ -27,7 +27,7 @@ namespace Duck_Bank_Builder
             sb.SetWriteAccessLevel(AccessLevel.Public);
             //sb.SetVendorId("YOUR_VENDOR_ID");
             sb.SetDocumentation("Schema for storing installation data on elements");
-            //sb.AddArrayField("CoreValues", typeof(bool));
+            //sb.AddArrayField("CoreValues", typeof(double));
             //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
             sb.SetSchemaName("DuckBuilderSchema");
             sb.AddSimpleField("Author", typeof(string));
@@ -76,7 +76,7 @@ namespace Duck_Bank_Builder
             return vv;
         }
 
-        public static void WriteInstallationData(Element element,int pipeCount, int userselection)
+        public static void WriteInstallationData(Element element, int pipeCount, int userselection)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
@@ -121,34 +121,35 @@ namespace Duck_Bank_Builder
             // Loop through 20 core fields
             try
             {
-                  foreach (var sel in Data.userselections)
-                  {
-                        if (/*sel == i*/ sel != null)
+                foreach (var sel in Data.userselections)
+                {
+                    if (/*sel == i*/ sel != null)
+                    {
+                        bool status = Data.Cores[sel];
+                        var pipe = Data.Cores_index[sel];
+                        var beam = Data.Cores_Pipes[pipe];
+                        var location = Data.corelocations[sel];
+                        if (status == true && pipe != null && pipe != null) // true if within pipeCount, false otherwise
                         {
-                            bool status = Data.Cores[sel];
-                            var pipe = Data.Cores_index[sel];
-                            var beam = Data.Cores_Pipes[pipe];
-                            if (status == true && pipe != null && pipe != null) // true if within pipeCount, false otherwise
-                            {
-                                var pt = Data.startpts_[sel];
-                                var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                                string fieldName = $"Core_{sel:00}";
-                                //if (key != null) { }
-                                var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
-                                //{(element.Location as LocationPoint).Point}
-                                entity.Set(fieldName, value);
-                            }
-                            else
-                            {
-                                var pt = Data.startpts_[sel];
-                                var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                                string fieldName = $"Core_{sel:00}";
-                                status = false;
-                                var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
-                                entity.Set(fieldName, value);
-                            }
+                            var pt = Data.startpts_[sel];
+                            var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                            string fieldName = $"Core_{sel:00}";
+                            //if (key != null) { }
+                            var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
+                            //{(element.Location as LocationPoint).Point}
+                            entity.Set(fieldName, value);
                         }
-                    } 
+                        else
+                        {
+                            var pt = Data.startpts_[sel];
+                            var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                            string fieldName = $"Core_{sel:00}";
+                            status = false;
+                            var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
+                            entity.Set(fieldName, value);
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -165,7 +166,7 @@ namespace Duck_Bank_Builder
         public static Entity ReadInstallationData(Element element)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
-            if (schema == null) TaskDialog.Show("Error","Schema Failed.");
+            if (schema == null) TaskDialog.Show("Error", "Schema Failed.");
 
             StringBuilder sb = new StringBuilder();
 
@@ -282,6 +283,24 @@ namespace Duck_Bank_Builder
             // Save to file
             XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
             doc.Save(filePath);
+        }
+
+        // Helper Methods
+
+        public static void WritePoint(Entity ent, XYZ point)
+        {
+            // Convert XYZ to a list of doubles
+            List<double> coords = new List<double> { point.X, point.Y, point.Z };
+            ent.Set<IList<double>>("PointCoords", coords);
+        }
+        public static XYZ ReadPoint(Entity ent)
+        {
+            IList<double> coords = ent.Get<IList<double>>("PointCoords");
+            if (coords.Count >= 3)
+            {
+                return new XYZ(coords[0], coords[1], coords[2]);
+            }
+            return XYZ.Zero; // fallback
         }
     }
 }

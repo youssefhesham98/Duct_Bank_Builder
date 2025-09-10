@@ -166,6 +166,7 @@ namespace Duck_Bank_Builder
                             Data.Cores_index[userselection] = pipe;
                             Data.Cores_Pipes[pipe] = ele;
                             Data.userselections.Add(userselection);
+                            Data.corelocations[userselection] = $"{Data.startpts_[userselection]}_{Data.endpts_[userselection]}";
                         }
                     }
                     #region print

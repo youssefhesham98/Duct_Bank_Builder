@@ -60,6 +60,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoresData.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="EextensibleStorage.cs" />
     <Compile Include="ExApp.cs" />
