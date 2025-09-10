@@ -17,8 +17,13 @@ namespace Duck_Bank_Builder
 {
     public class RvtUtils
     {
-        public static void CreatePipes(Document doc, UIDocument uidoc, PipingSystemType systemType, PipeType pipeType, int userselection)
+        public static void CreatePipes(Document doc, UIDocument uidoc, PipingSystemType systemType, PipeType pipeType, List<int> userselections)
         {
+            //foreach (var sel in userselections)
+            //{
+            //    Data.userselections.Add(sel);
+            //}
+
             var pickedRefs = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             // convert references to elements
             List<Element> elements = pickedRefs
@@ -156,42 +161,26 @@ namespace Duck_Bank_Builder
                             TaskDialog.Show("Error", "Could not find required PipeType, SystemType, or Level.");
                             return;
                         }
-
-                        // Step 6: Create pipe between start and end points
-                        if (Data.startpts_.Keys.Count >= userselection && Data.endpts_.Keys.Count >= userselection)
+                        foreach (var userselection in userselections)
                         {
-                            Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
-                            Data.Pipes.Add(pipe);
-                            Data.Cores[userselection] = true;
-                            Data.Cores_index[userselection] = pipe;
-                            Data.Cores_Pipes[pipe] = ele;
-                            Data.userselections.Add(userselection);
-                            Data.corelocations[userselection] = $"{Data.startpts_[userselection]}_{Data.endpts_[userselection]}";
+                            // Step 6: Create pipe between start and end points
+                            if (Data.startpts_.Keys.Count >= userselection && Data.endpts_.Keys.Count >= userselection)
+                            {
+                                Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
+                                Data.Pipes.Add(pipe);
+                                Data.Cores[userselection] = true;
+                                Data.Cores_index[userselection] = pipe;
+                                Data.Cores_Pipes[pipe] = ele;
+                                Data.corelocations[userselection] = $"{Data.startpts_[userselection]}_{Data.endpts_[userselection]}";
+                            }
                         }
                     }
-                    #region print
-                    //var sb = new StringBuilder();
-
-                    //for (int i = 0; i < Data.row_points; i++)
-                    //{
-                    //    for (int j = 0; j < Data.col_points; j++)
-                    //    {
-                    //        sb.AppendLine($"Start Point[{i},{j}]: {Data.startpts[i, j]}");
-                    //        sb.AppendLine($"End Point[{i},{j}]: {Data.endpts[i, j]}");
-                    //        // Just for testing
-                    //        //TaskDialog.Show("Points", $"Start Point[{i},{j}]: {Data.startpts[i, j]}\nEnd Point[{i},{j}]: {Data.endpts[i, j]}");
-
-                    //    }
-                    //}
-                    //sb.AppendLine($"Total Points: \n {Data.points_count}, {Data.row_points} * {Data.col_points}");
-                    //TaskDialog.Show("Points", sb.ToString());
-                    #endregion
                 }
                 tx.Commit();
             }
         }
 
-        public static void CreateDB(List<Element> beams,int count, int userselection)
+        public static void CreateDB(List<Element> beams,int count, List<int> userselections)
         {
             //Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
             //Element element = doc.GetElement(pickedRef);
@@ -199,25 +188,21 @@ namespace Duck_Bank_Builder
             {
                 if (duct != null)
                 {
-                    //string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+                    foreach (var userselection in userselections)
+                    {
+                        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
 
-                    bool status = true;
-                    Schema schema = EextensibleStorage.CreateSchema();
-                    ///Entity Read_entity = EextensibleStorage.ReadInstallationData(duct);
-                    //if (!Read_entity.IsValid())
-                    //{
-                    //    TaskDialog.Show("Export", "No extensible storage found on this element.");
-                    //}
-                    EextensibleStorage.WriteInstallationData(duct, count, userselection);
-                    Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
-                    Data.listST.Add(Read_entity_);
+                        bool status = true;
+                        Schema schema = EextensibleStorage.CreateSchema();
+                        EextensibleStorage.WriteInstallationData(duct, count, userselection);
+                        Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
+                        Data.listST.Add(Read_entity_);
 
-                    //EextensibleStorage.ExportEntityToXml(Read_entity_, path);
-                    //TaskDialog.Show("Export", $"Data exported to:\n{path}");
+                        EextensibleStorage.ExportEntityToXml(Read_entity_, path);
+                        TaskDialog.Show("Export", $"Data exported to:\n{path}");
 
-                    //Entity entity = duct.GetEntity(schema);
-                    //duct.SetEntity(entity);
-                    //TaskDialog.Show("Entity Data", sb.ToString());
+
+                    }
                 }
             }
         }

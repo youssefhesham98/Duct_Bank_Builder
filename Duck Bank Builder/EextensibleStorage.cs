@@ -56,7 +56,7 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Core_18", typeof(string));
             sb.AddSimpleField("Core_19", typeof(string));
             sb.AddSimpleField("Core_20", typeof(string));
-
+            sb.AddArrayField("c",typeof(CoresData));
 
             // Add fields
             //sb.AddSimpleField("Status", typeof(string));
@@ -89,6 +89,7 @@ namespace Duck_Bank_Builder
             entity.Set("Version", 1);
             entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             entity.Set("ElemedID", element.Id);
+            //entity.Set("c", new CoresData[] {new CoresData(),new CoresData()});
             //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
@@ -111,19 +112,12 @@ namespace Duck_Bank_Builder
             //entity.Set("Core_19", status);
             //entity.Set("Core_20", status);
 
-            //var strb = new StringBuilder();
-            //foreach (var pt in Data.startpts)
-            //{
-            //    var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-            //    strb.AppendLine($"{key}_{status}_{(element.Location as LocationPoint).Point}");
-            //}
-
             // Loop through 20 core fields
             try
             {
                 foreach (var sel in Data.userselections)
                 {
-                    if (/*sel == i*/ sel != null)
+                    if (sel != null)
                     {
                         bool status = Data.Cores[sel];
                         var pipe = Data.Cores_index[sel];

@@ -22,10 +22,10 @@ namespace Duck_Bank_Builder
             switch (request)
             {
                 case Request.Create_Pipes:
-                    RvtUtils.CreatePipes(ExCmd.doc, ExCmd.uidoc, Mainform.pipingsys, Mainform.pipetype, Mainform.usersel);
+                    RvtUtils.CreatePipes(ExCmd.doc, ExCmd.uidoc, Mainform.pipingsys, Mainform.pipetype,Data.userselections);
                     break;
                 case Request.Create_DB:
-                    RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count, Mainform.usersel);
+                    RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count,Data.userselections);
                     break;
             }
         }

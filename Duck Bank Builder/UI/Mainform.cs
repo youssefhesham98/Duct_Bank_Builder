@@ -21,7 +21,7 @@ namespace Duck_Bank_Builder.UI
     {
         public static PipingSystemType pipingsys { get; set; }
         public static PipeType pipetype { get; set; }
-        public static int usersel{ get; set; }
+        public static List<int> usersel{ get; set; }
         //public static List<int> count_list { get; set; }
         public Mainform()
         {
@@ -79,7 +79,18 @@ namespace Duck_Bank_Builder.UI
             //RvtUtils.InternalOriginY = internaly.Text;
             pipetype = pipe_types.SelectedItem as PipeType;
             pipingsys = system_types.SelectedItem as PipingSystemType;
-            usersel = int.Parse(userselection.Text);
+            Data.userselections.Clear();
+            List<int> numbers = userselection.Text.Split(',')
+                .Select(s => int.Parse(s))
+                .ToList();
+
+            foreach (var sel in numbers)
+            {
+                Data.userselections.Add(sel);
+                //usersel.Add(sel);
+            }
+
+            //usersel = Data.userselections;
 
             // Later, get selected indices
             //List<int> selectedIndices = points.CheckedItems
@@ -167,7 +178,7 @@ namespace Duck_Bank_Builder.UI
 
         private void crt_db_Click(object sender, EventArgs e)
         {
-            usersel = int.Parse(userselection.Text);
+            //usersel = Data.userselections;
             ExCmd.exevt.request = Request.Create_DB;
             ExCmd.exevthan.Raise();
         }
