@@ -92,23 +92,11 @@ namespace Duck_Bank_Builder.UI
 
             //usersel = Data.userselections;
 
-            // Later, get selected indices
-            //List<int> selectedIndices = points.CheckedItems
-            //    .Cast<int>()
-            //    .Select(humanIndex => humanIndex - 1).OrderBy(id => id) // Convert to zero-based
-            //    .ToList();
-            //count_list = selectedIndices;
-
             if (pipetype != null && pipingsys != null)
             {
                 ExCmd.exevt.request = Request.Create_Pipes;
                 ExCmd.exevthan.Raise();
             }
-
-            //foreach (int index in selectedIndices)
-            //{
-            //    TaskDialog.Show("Index", $"Selected Index: {index}");
-            //}
         }
 
         private void edecs_Click(object sender, EventArgs e)

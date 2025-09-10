@@ -194,7 +194,7 @@ namespace Duck_Bank_Builder
 
                         bool status = true;
                         Schema schema = EextensibleStorage.CreateSchema();
-                        EextensibleStorage.WriteInstallationData(duct, count, userselection);
+                        EextensibleStorage.WriteInstallationData(duct, count,userselections);
                         Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
                         Data.listST.Add(Read_entity_);
 

@@ -33,6 +33,7 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Author", typeof(string));
             sb.AddSimpleField("Version", typeof(int));
             sb.AddSimpleField("CreatedOn", typeof(string));
+            sb.AddArrayField("Cores", typeof(CoresData));
             sb.AddSimpleField("ElemedID", typeof(ElementId));
             //var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
             //location.SetSpec(SpecTypeId.Length);
@@ -56,16 +57,15 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Core_18", typeof(string));
             sb.AddSimpleField("Core_19", typeof(string));
             sb.AddSimpleField("Core_20", typeof(string));
-            sb.AddArrayField("c",typeof(CoresData));
 
             // Add fields
             //sb.AddSimpleField("Status", typeof(string));
             //sb.AddSimpleField("Installer", typeof(string));
             //sb.AddSimpleField("LastUpdated", typeof(string));
-            Schema vv = null;
+            Schema Sc = null;
             try
             {
-                vv = sb.Finish();
+                Sc = sb.Finish();
 
             }
             catch (Exception ex)
@@ -73,10 +73,10 @@ namespace Duck_Bank_Builder
 
                 TaskDialog.Show("Error", ex.Message);
             }
-            return vv;
+            return Sc;
         }
 
-        public static void WriteInstallationData(Element element, int pipeCount, int userselection)
+        public static void WriteInstallationData(Element element, int pipeCount, List<int> userselections)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
@@ -89,7 +89,9 @@ namespace Duck_Bank_Builder
             entity.Set("Version", 1);
             entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             entity.Set("ElemedID", element.Id);
-            //entity.Set("c", new CoresData[] {new CoresData(),new CoresData()});
+            var cores = new CoresData[Data.userselections.Count];
+            entity.Set("Cores", cores);
+
             //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
@@ -115,7 +117,7 @@ namespace Duck_Bank_Builder
             // Loop through 20 core fields
             try
             {
-                foreach (var sel in Data.userselections)
+                foreach (var sel in userselections)
                 {
                     if (sel != null)
                     {
@@ -132,6 +134,11 @@ namespace Duck_Bank_Builder
                             var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
                             //{(element.Location as LocationPoint).Point}
                             entity.Set(fieldName, value);
+
+                            //for (int i = 0; i < cores.Length; i++)
+                            //{
+                                cores[sel] = new CoresData(sel.ToString(),location,status);
+                            //}
                         }
                         else
                         {
@@ -141,6 +148,7 @@ namespace Duck_Bank_Builder
                             status = false;
                             var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
                             entity.Set(fieldName, value);
+                            //cores[sel] = new CoresData(sel.ToString(), location, status);
                         }
                     }
                 }
@@ -192,6 +200,15 @@ namespace Duck_Bank_Builder
                 string core_18 = entity.Get<string>("Core_18");
                 string core_19 = entity.Get<string>("Core_19");
                 string core_20 = entity.Get<string>("Core_20");
+                //var cores = entity.Get<CoresData[]>("Cores");
+
+                //foreach (var core in cores)
+                //{
+                //    if (core != null)
+                //    {
+                //        sb.AppendLine($"Core Index: {core.CoreIndex}, Origin: {core.Origin}, Is Filled: {core.IsFilled}");
+                //    }
+                //}
 
                 // Collect the boolean core values
                 sb.AppendLine($"Author: {author}");
@@ -201,26 +218,6 @@ namespace Duck_Bank_Builder
                 //sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
                 sb.AppendLine();
                 sb.AppendLine("Core Values:");
-                //sb.AppendLine($"Core_01: {core_01}");
-                //sb.AppendLine($"Core_02: {core_02}");
-                //sb.AppendLine($"Core_03: {core_03}");
-                //sb.AppendLine($"Core_04: {core_04}");
-                //sb.AppendLine($"Core_05: {core_05}");
-                //sb.AppendLine($"Core_06: {core_06}");
-                //sb.AppendLine($"Core_07: {core_07}");
-                //sb.AppendLine($"Core_08: {core_08}");
-                //sb.AppendLine($"Core_09: {core_09}");
-                //sb.AppendLine($"Core_10: {core_10}");
-                //sb.AppendLine($"Core_11: {core_11}");
-                //sb.AppendLine($"Core_12: {core_12}");
-                //sb.AppendLine($"Core_13: {core_13}");
-                //sb.AppendLine($"Core_14: {core_14}");
-                //sb.AppendLine($"Core_15: {core_15}");
-                //sb.AppendLine($"Core_16: {core_16}");
-                //sb.AppendLine($"Core_17: {core_17}");
-                //sb.AppendLine($"Core_18: {core_18}");
-                //sb.AppendLine($"Core_19: {core_19}");
-                //sb.AppendLine($"Core_20: {core_20}");
 
                 for (int i = 1; i <= 20; i++)
                 {

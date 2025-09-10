@@ -10,16 +10,17 @@ namespace Duck_Bank_Builder
     public class CoresData
     {
         public string CoreIndex { get; set; }
-        public ElementId BanksIDs { get; set; }
+        //public ElementId BanksIDs { get; set; }
         public string Origin { get; set; }
         public bool IsFilled { get; set; }
+        public string Core_01 { get; set; }
 
 
-        public CoresData(string coreIndex,ElementId elementId,string origin,bool isFilled)
+        public CoresData(string coreIndex,string origin,bool isFilled)
         {
             this.IsFilled = isFilled;   
             this.CoreIndex = coreIndex;
-            this.BanksIDs = elementId;
+            //this.BanksIDs = elementId;
             this.Origin = origin;
             
         }
