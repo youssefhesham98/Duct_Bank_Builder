@@ -27,7 +27,7 @@ namespace Duck_Bank_Builder
             sb.SetWriteAccessLevel(AccessLevel.Public);
             //sb.SetVendorId("YOUR_VENDOR_ID");
             sb.SetDocumentation("Schema for storing installation data on elements");
-            sb.AddArrayField("CoreValues", typeof(bool));
+            //sb.AddArrayField("CoreValues", typeof(bool));
             //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
             sb.SetSchemaName("DuckBuilderSchema");
             sb.AddSimpleField("Author", typeof(string));
@@ -118,52 +118,21 @@ namespace Duck_Bank_Builder
             //    strb.AppendLine($"{key}_{status}_{(element.Location as LocationPoint).Point}");
             //}
 
-            //bool status = false;
-            //var input = Mainform.usersel;
             // Loop through 20 core fields
-            //int i = 1;
             try
             {
-                //foreach (var pipe in Data.Pipes)
-                //{
-                //    bool status = Data.Cores[i];
-                //    var pipe_ = Data.Cores_index[i];
-                //    var beam = Data.Cores_Pipes[pipe];
-                //    if (status == true && pipe_ != null && beam != null) // true if within pipeCount, false otherwise
-                //    {
-                //        var pt = Data.startpts_[i];
-                //        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                //        string fieldName = $"Core_{i:00}";
-                //        //if (key != null) { }
-                //        var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
-                //        //{(element.Location as LocationPoint).Point}
-                //        entity.Set(fieldName, value);
-                //    }
-                //    else
-                //    {
-                //        var pt = Data.startpts_[i];
-                //        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                //        string fieldName = $"Core_{i:00}";
-                //        status = false;
-                //        var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
-                //        entity.Set(fieldName, value);
-                //    }
-                //    i++;
-                //}
-                for (int i = 1; i <= 20; i++)
-                {
                   foreach (var sel in Data.userselections)
                   {
-                        if (sel == i)
+                        if (/*sel == i*/ sel != null)
                         {
-                            bool status = Data.Cores[i];
-                            var pipe = Data.Cores_index[i];
+                            bool status = Data.Cores[sel];
+                            var pipe = Data.Cores_index[sel];
                             var beam = Data.Cores_Pipes[pipe];
                             if (status == true && pipe != null && pipe != null) // true if within pipeCount, false otherwise
                             {
-                                var pt = Data.startpts_[i];
+                                var pt = Data.startpts_[sel];
                                 var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                                string fieldName = $"Core_{i:00}";
+                                string fieldName = $"Core_{sel:00}";
                                 //if (key != null) { }
                                 var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
                                 //{(element.Location as LocationPoint).Point}
@@ -171,35 +140,26 @@ namespace Duck_Bank_Builder
                             }
                             else
                             {
-                                var pt = Data.startpts_[i];
+                                var pt = Data.startpts_[sel];
                                 var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                                string fieldName = $"Core_{i:00}";
+                                string fieldName = $"Core_{sel:00}";
                                 status = false;
                                 var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
                                 entity.Set(fieldName, value);
                             }
                         }
-
-
                     } 
-                }
             }
             catch (Exception ex)
             {
-                TaskDialog.Show("Key", ex.Message); // Error here
+                TaskDialog.Show("Key", ex.Message);
             }
-
-            //entity.Set("Status", "In Progress");
-            //entity.Set("Installer", "John Doe");
-            //entity.Set("LastUpdated", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
-
             using (Transaction t = new Transaction(element.Document, "Write Installation Data"))
             {
                 t.Start();
                 element.SetEntity(entity);
                 t.Commit();
             }
-            //return entity;
         }
 
         public static Entity ReadInstallationData(Element element)
@@ -238,15 +198,7 @@ namespace Duck_Bank_Builder
                 string core_19 = entity.Get<string>("Core_19");
                 string core_20 = entity.Get<string>("Core_20");
 
-                //string status = entity.Get<string>("Status");
-                //string installer = entity.Get<string>("Installer");
-                //string lastUpdated = entity.Get<string>("LastUpdated");
-
-                //TaskDialog.Show("Installation Info",
-                //$"Status: {status}\nInstaller: {installer}\nLast Updated: {lastUpdated}");
-
                 // Collect the boolean core values
-
                 sb.AppendLine($"Author: {author}");
                 sb.AppendLine($"Version: {version}");
                 sb.AppendLine($"Created On: {createdOn}");

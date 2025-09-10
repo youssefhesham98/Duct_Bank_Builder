@@ -66,11 +66,11 @@ namespace Duck_Bank_Builder.UI
         private void getcenters_Click(object sender, EventArgs e)
         {
             Data.Beams.Clear();
-            Data.Pipes.Clear();
-            Data.Cores_index.Clear();
-            Data.Cores_Pipes.Clear();
-            Data.Cores.Clear();
-            Data.listST.Clear();
+            //Data.Pipes.Clear();
+            //Data.Cores_index.Clear();
+            //Data.Cores_Pipes.Clear();
+            //Data.Cores.Clear();
+            //Data.listST.Clear();
             //RvtUtils.X = surveyx.Text;
             //RvtUtils.Y = surveyy.Text;
             //RvtUtils.Z = internalz.Text;
