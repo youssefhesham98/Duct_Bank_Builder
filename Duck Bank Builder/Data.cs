@@ -19,7 +19,8 @@ namespace Duck_Bank_Builder
         public static int points_count { get; set; }
         public static XYZ [,] startpts { get; set; }
         public static XYZ[,] endpts { get; set; }
-        public static Dictionary<int,XYZ> endpts_ { get; set; }
+        public static Dictionary<int, XYZ> endpts_ { get; set; }
+        public static Dictionary<int, Pipe> Cores { get; set; }
         public static Dictionary<int, XYZ> startpts_ { get; set; }
         public static Dictionary<string, XYZ> startptsExSt_ { get; set; }
         public static Dictionary<string, XYZ> endptsExSt_ { get; set; }
@@ -41,6 +42,7 @@ namespace Duck_Bank_Builder
             startptsExSt_ = new Dictionary<string, XYZ>();
             endptsExSt_ = new Dictionary<string, XYZ>();
             listST = new List<Entity>();
+            Cores = new Dictionary<int, Pipe>();
 
 
         }

@@ -158,7 +158,7 @@ namespace Duck_Bank_Builder
                         }
 
                         // Step 6: Create pipe between start and end points
-                        if (Data.startpts_.Keys.Count > userselection && Data.endpts_.Keys.Count > userselection)
+                        if (Data.startpts_.Keys.Count >= userselection && Data.endpts_.Keys.Count >= userselection)
                         {
                             Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
                             Data.Pipes.Add(pipe);
@@ -206,7 +206,7 @@ namespace Duck_Bank_Builder
                     //}
                     EextensibleStorage.WriteInstallationData(duct, count);
                     Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
-                    //Data.listST.Add(Read_entity_);
+                    Data.listST.Add(Read_entity_);
 
                     //EextensibleStorage.ExportEntityToXml(Read_entity_, path);
                     //TaskDialog.Show("Export", $"Data exported to:\n{path}");

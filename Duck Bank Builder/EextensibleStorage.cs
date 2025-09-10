@@ -67,10 +67,10 @@ namespace Duck_Bank_Builder
                 vv = sb.Finish();
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                
+                TaskDialog.Show("Error", ex.Message);
             }
 
 
@@ -90,7 +90,7 @@ namespace Duck_Bank_Builder
             entity.Set("Version", 1);
             entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             entity.Set("ElemedID", element.Id);
-            //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
+            entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
             //entity.Set("Core_03", status);
@@ -120,17 +120,18 @@ namespace Duck_Bank_Builder
             //}
 
             bool status = false;
+            var input = Mainform.usersel;
             // Loop through 20 core fields
             try
             {
                 for (int i = 1; i <= 20; i++)
                 {
-                    var pt = Data.startpts_[i];
-                    var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                    string fieldName = $"Core_{i:00}";
-                    var pipe = Data.Pipes[i];
-                    if (pipe != null) // true if within pipeCount, false otherwise
+                    var pipe = Data.Cores[i];
+                    if (i == input) // true if within pipeCount, false otherwise
                     {
+                        var pt = Data.startpts_[i];
+                        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                        string fieldName = $"Core_{i:00}";
                         status = true;
                         var value = $"{key}_{status}";
                         ///*{(element.Location as LocationPoint).Point}*
@@ -138,15 +139,18 @@ namespace Duck_Bank_Builder
                     }
                     else
                     {
+                        var pt = Data.startpts_[i];
+                        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                        string fieldName = $"Core_{i:00}";
                         status = false;
                         var value = $"{key}_{status}";
                         entity.Set(fieldName, value);
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                TaskDialog.Show("Error", ex.Message);
             }
             
 
@@ -177,7 +181,7 @@ namespace Duck_Bank_Builder
                 int version = entity.Get<int>("Version");
                 string createdOn = entity.Get<string>("CreatedOn");
                 ElementId elementid = entity.Get<ElementId>("ElemedID");
-               // XYZ origin = entity.Get<XYZ>("ElementOrigin");
+                XYZ origin = entity.Get<XYZ>("ElementOrigin");
                 string core_01 = entity.Get<string>("Core_01");
                 string core_02 = entity.Get<string>("Core_02");
                 string core_03 = entity.Get<string>("Core_03");
@@ -212,7 +216,7 @@ namespace Duck_Bank_Builder
                 sb.AppendLine($"Version: {version}");
                 sb.AppendLine($"Created On: {createdOn}");
                 sb.AppendLine($"ElementId: {elementid}");
-                //sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
+                sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
                 sb.AppendLine();
                 sb.AppendLine("Core Values:");
                 sb.AppendLine($"Core_01: {core_01}");
