@@ -162,6 +162,10 @@ namespace Duck_Bank_Builder
                         {
                             Pipe pipe = Pipe.Create(doc, systemType.Id, pipeType.Id, level.Id, Data.startpts_[userselection], Data.endpts_[userselection]);
                             Data.Pipes.Add(pipe);
+                            Data.Cores[userselection] = true;
+                            Data.Cores_index[userselection] = pipe;
+                            Data.Cores_Pipes[pipe] = ele;
+                            Data.userselections.Add(userselection);
                         }
                     }
                     #region print
@@ -181,13 +185,12 @@ namespace Duck_Bank_Builder
                     //sb.AppendLine($"Total Points: \n {Data.points_count}, {Data.row_points} * {Data.col_points}");
                     //TaskDialog.Show("Points", sb.ToString());
                     #endregion
-
                 }
                 tx.Commit();
             }
         }
 
-        public static void CreateDB(List<Element> beams,int count)
+        public static void CreateDB(List<Element> beams,int count, int userselection)
         {
             //Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
             //Element element = doc.GetElement(pickedRef);
@@ -204,7 +207,7 @@ namespace Duck_Bank_Builder
                     //{
                     //    TaskDialog.Show("Export", "No extensible storage found on this element.");
                     //}
-                    EextensibleStorage.WriteInstallationData(duct, count);
+                    EextensibleStorage.WriteInstallationData(duct, count, userselection);
                     Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
                     Data.listST.Add(Read_entity_);
 

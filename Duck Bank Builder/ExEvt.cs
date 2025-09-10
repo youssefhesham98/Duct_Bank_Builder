@@ -25,7 +25,7 @@ namespace Duck_Bank_Builder
                     RvtUtils.CreatePipes(ExCmd.doc, ExCmd.uidoc, Mainform.pipingsys, Mainform.pipetype, Mainform.usersel);
                     break;
                 case Request.Create_DB:
-                    RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count);
+                    RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count, Mainform.usersel);
                     break;
             }
         }

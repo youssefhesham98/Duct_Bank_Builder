@@ -76,7 +76,7 @@ namespace Duck_Bank_Builder
             return vv;
         }
 
-        public static void WriteInstallationData(Element element,int pipeCount)
+        public static void WriteInstallationData(Element element,int pipeCount, int userselection)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
@@ -118,33 +118,70 @@ namespace Duck_Bank_Builder
             //    strb.AppendLine($"{key}_{status}_{(element.Location as LocationPoint).Point}");
             //}
 
-            bool status = false;
-            var input = Mainform.usersel;
+            //bool status = false;
+            //var input = Mainform.usersel;
             // Loop through 20 core fields
+            //int i = 1;
             try
             {
+                //foreach (var pipe in Data.Pipes)
+                //{
+                //    bool status = Data.Cores[i];
+                //    var pipe_ = Data.Cores_index[i];
+                //    var beam = Data.Cores_Pipes[pipe];
+                //    if (status == true && pipe_ != null && beam != null) // true if within pipeCount, false otherwise
+                //    {
+                //        var pt = Data.startpts_[i];
+                //        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                //        string fieldName = $"Core_{i:00}";
+                //        //if (key != null) { }
+                //        var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
+                //        //{(element.Location as LocationPoint).Point}
+                //        entity.Set(fieldName, value);
+                //    }
+                //    else
+                //    {
+                //        var pt = Data.startpts_[i];
+                //        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                //        string fieldName = $"Core_{i:00}";
+                //        status = false;
+                //        var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
+                //        entity.Set(fieldName, value);
+                //    }
+                //    i++;
+                //}
                 for (int i = 1; i <= 20; i++)
                 {
-                    var pipe = Data.Cores[i];
-                    if (i == input) // true if within pipeCount, false otherwise
-                    {
-                        var pt = Data.startpts_[i];
-                        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                        string fieldName = $"Core_{i:00}";
-                        status = true;
-                        var value = $"{key}_{status}";
-                        ///*{(element.Location as LocationPoint).Point}*
-                        entity.Set(fieldName, value);
-                    }
-                    else
-                    {
-                        var pt = Data.startpts_[i];
-                        var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                        string fieldName = $"Core_{i:00}";
-                        status = false;
-                        var value = $"{key}_{status}";
-                        entity.Set(fieldName, value);
-                    }
+                  foreach (var sel in Data.userselections)
+                  {
+                        if (sel == i)
+                        {
+                            bool status = Data.Cores[i];
+                            var pipe = Data.Cores_index[i];
+                            var beam = Data.Cores_Pipes[pipe];
+                            if (status == true && pipe != null && pipe != null) // true if within pipeCount, false otherwise
+                            {
+                                var pt = Data.startpts_[i];
+                                var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                                string fieldName = $"Core_{i:00}";
+                                //if (key != null) { }
+                                var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
+                                //{(element.Location as LocationPoint).Point}
+                                entity.Set(fieldName, value);
+                            }
+                            else
+                            {
+                                var pt = Data.startpts_[i];
+                                var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                                string fieldName = $"Core_{i:00}";
+                                status = false;
+                                var value = $"{key}_{status}_{beam.Id}_{pipe.Id}";
+                                entity.Set(fieldName, value);
+                            }
+                        }
+
+
+                    } 
                 }
             }
             catch (Exception ex)

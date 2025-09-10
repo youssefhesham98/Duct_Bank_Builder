@@ -20,13 +20,16 @@ namespace Duck_Bank_Builder
         public static XYZ [,] startpts { get; set; }
         public static XYZ[,] endpts { get; set; }
         public static Dictionary<int, XYZ> endpts_ { get; set; }
-        public static Dictionary<int, Pipe> Cores { get; set; }
+        public static Dictionary<int, bool> Cores { get; set; }
+        public static Dictionary<int, Pipe> Cores_index { get; set; }
+        public static Dictionary<Pipe, Element> Cores_Pipes { get; set; }
         public static Dictionary<int, XYZ> startpts_ { get; set; }
         public static Dictionary<string, XYZ> startptsExSt_ { get; set; }
         public static Dictionary<string, XYZ> endptsExSt_ { get; set; }
         public static List<PipingSystemType> pipingsys { get; set; }
         public static List<PipeType> pipetypes { get; set; }
         public static List<Entity> listST { get; set; }
+        public static List<int> userselections { get; set; }
 
         public static void Intialize()
         {
@@ -42,7 +45,10 @@ namespace Duck_Bank_Builder
             startptsExSt_ = new Dictionary<string, XYZ>();
             endptsExSt_ = new Dictionary<string, XYZ>();
             listST = new List<Entity>();
-            Cores = new Dictionary<int, Pipe>();
+            Cores = new Dictionary<int, bool>();
+            Cores_index = new Dictionary<int, Pipe>();
+            Cores_Pipes = new Dictionary<Pipe, Element>();
+            userselections = new List<int>();
 
 
         }
