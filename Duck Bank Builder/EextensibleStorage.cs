@@ -34,8 +34,8 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Version", typeof(int));
             sb.AddSimpleField("CreatedOn", typeof(string));
             sb.AddSimpleField("ElemedID", typeof(ElementId));
-            var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
-            location.SetSpec(SpecTypeId.Length);
+            //var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
+            //location.SetSpec(SpecTypeId.Length);
             sb.AddSimpleField("Core_01", typeof(string));
             sb.AddSimpleField("Core_02", typeof(string));
             sb.AddSimpleField("Core_03", typeof(string));
@@ -73,8 +73,6 @@ namespace Duck_Bank_Builder
 
                 TaskDialog.Show("Error", ex.Message);
             }
-
-
             return vv;
         }
 
@@ -91,7 +89,7 @@ namespace Duck_Bank_Builder
             entity.Set("Version", 1);
             entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             entity.Set("ElemedID", element.Id);
-            entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
+            //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
             //entity.Set("Core_03", status);
@@ -151,9 +149,8 @@ namespace Duck_Bank_Builder
             }
             catch (Exception ex)
             {
-                TaskDialog.Show("Error", ex.Message);
+                TaskDialog.Show("Key", ex.Message); // Error here
             }
-            
 
             //entity.Set("Status", "In Progress");
             //entity.Set("Installer", "John Doe");
@@ -182,7 +179,7 @@ namespace Duck_Bank_Builder
                 int version = entity.Get<int>("Version");
                 string createdOn = entity.Get<string>("CreatedOn");
                 ElementId elementid = entity.Get<ElementId>("ElemedID");
-                XYZ origin = entity.Get<XYZ>("ElementOrigin");
+                //XYZ origin = entity.Get<XYZ>("ElementOrigin");
                 string core_01 = entity.Get<string>("Core_01");
                 string core_02 = entity.Get<string>("Core_02");
                 string core_03 = entity.Get<string>("Core_03");
@@ -217,29 +214,29 @@ namespace Duck_Bank_Builder
                 sb.AppendLine($"Version: {version}");
                 sb.AppendLine($"Created On: {createdOn}");
                 sb.AppendLine($"ElementId: {elementid}");
-                sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
+                //sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
                 sb.AppendLine();
                 sb.AppendLine("Core Values:");
-                sb.AppendLine($"Core_01: {core_01}");
-                sb.AppendLine($"Core_02: {core_02}");
-                sb.AppendLine($"Core_03: {core_03}");
-                sb.AppendLine($"Core_04: {core_04}");
-                sb.AppendLine($"Core_05: {core_05}");
-                sb.AppendLine($"Core_06: {core_06}");
-                sb.AppendLine($"Core_07: {core_07}");
-                sb.AppendLine($"Core_08: {core_08}");
-                sb.AppendLine($"Core_09: {core_09}");
-                sb.AppendLine($"Core_10: {core_10}");
-                sb.AppendLine($"Core_11: {core_11}");
-                sb.AppendLine($"Core_12: {core_12}");
-                sb.AppendLine($"Core_13: {core_13}");
-                sb.AppendLine($"Core_14: {core_14}");
-                sb.AppendLine($"Core_15: {core_15}");
-                sb.AppendLine($"Core_16: {core_16}");
-                sb.AppendLine($"Core_17: {core_17}");
-                sb.AppendLine($"Core_18: {core_18}");
-                sb.AppendLine($"Core_19: {core_19}");
-                sb.AppendLine($"Core_20: {core_20}");
+                //sb.AppendLine($"Core_01: {core_01}");
+                //sb.AppendLine($"Core_02: {core_02}");
+                //sb.AppendLine($"Core_03: {core_03}");
+                //sb.AppendLine($"Core_04: {core_04}");
+                //sb.AppendLine($"Core_05: {core_05}");
+                //sb.AppendLine($"Core_06: {core_06}");
+                //sb.AppendLine($"Core_07: {core_07}");
+                //sb.AppendLine($"Core_08: {core_08}");
+                //sb.AppendLine($"Core_09: {core_09}");
+                //sb.AppendLine($"Core_10: {core_10}");
+                //sb.AppendLine($"Core_11: {core_11}");
+                //sb.AppendLine($"Core_12: {core_12}");
+                //sb.AppendLine($"Core_13: {core_13}");
+                //sb.AppendLine($"Core_14: {core_14}");
+                //sb.AppendLine($"Core_15: {core_15}");
+                //sb.AppendLine($"Core_16: {core_16}");
+                //sb.AppendLine($"Core_17: {core_17}");
+                //sb.AppendLine($"Core_18: {core_18}");
+                //sb.AppendLine($"Core_19: {core_19}");
+                //sb.AppendLine($"Core_20: {core_20}");
 
                 for (int i = 1; i <= 20; i++)
                 {

@@ -199,7 +199,7 @@ namespace Duck_Bank_Builder
 
                     bool status = true;
                     Schema schema = EextensibleStorage.CreateSchema();
-                    Entity Read_entity = EextensibleStorage.ReadInstallationData(duct);
+                    ///Entity Read_entity = EextensibleStorage.ReadInstallationData(duct);
                     //if (!Read_entity.IsValid())
                     //{
                     //    TaskDialog.Show("Export", "No extensible storage found on this element.");
