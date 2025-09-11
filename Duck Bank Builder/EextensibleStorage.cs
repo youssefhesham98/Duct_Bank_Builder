@@ -33,7 +33,7 @@ namespace Duck_Bank_Builder
             sb.AddSimpleField("Author", typeof(string));
             sb.AddSimpleField("Version", typeof(int));
             sb.AddSimpleField("CreatedOn", typeof(string));
-            sb.AddArrayField("Cores", typeof(CoresData));
+            //sb.AddArrayField("Cores", typeof(CoresData));
             sb.AddSimpleField("ElemedID", typeof(ElementId));
             //var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
             //location.SetSpec(SpecTypeId.Length);
@@ -89,8 +89,8 @@ namespace Duck_Bank_Builder
             entity.Set("Version", 1);
             entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
             entity.Set("ElemedID", element.Id);
-            var cores = new CoresData[Data.userselections.Count];
-            entity.Set("Cores", cores);
+            //var cores = new CoresData[Data.userselections.Count];
+            //entity.Set("Cores", cores);
 
             //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
@@ -117,41 +117,52 @@ namespace Duck_Bank_Builder
             // Loop through 20 core fields
             try
             {
-                foreach (var sel in userselections)
+                foreach (var beam in Data.Beams)
                 {
-                    if (sel != null)
+                    if (beam != null)
                     {
-                        bool status = Data.Cores[sel];
-                        var pipe = Data.Cores_index[sel];
-                        var beam = Data.Cores_Pipes[pipe];
-                        var location = Data.corelocations[sel];
-                        if (status == true && pipe != null && pipe != null) // true if within pipeCount, false otherwise
+                        for (int i = 1; i <= 20; i++)
                         {
-                            var pt = Data.startpts_[sel];
-                            var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                            string fieldName = $"Core_{sel:00}";
-                            //if (key != null) { }
-                            var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
-                            //{(element.Location as LocationPoint).Point}
-                            entity.Set(fieldName, value);
-
-                            //for (int i = 0; i < cores.Length; i++)
-                            //{
-                                cores[sel] = new CoresData(sel.ToString(),location,status);
-                            //}
-                        }
-                        else
-                        {
-                            var pt = Data.startpts_[sel];
-                            var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
-                            string fieldName = $"Core_{sel:00}";
-                            status = false;
-                            var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
-                            entity.Set(fieldName, value);
-                            //cores[sel] = new CoresData(sel.ToString(), location, status);
+                            entity.Set($"Core_{i:00}","False");
                         }
                     }
                 }
+
+                //foreach (var sel in userselections)
+                //{
+                //    if (sel != null)
+                //    {
+                //        bool status = Data.Cores[sel];
+                //        var pipe = Data.Cores_index[sel];
+                //        var beam = Data.Cores_Pipes[pipe];
+                //        var location = Data.corelocations[sel];
+                //        if (status == true && pipe != null && pipe != null) // true if within pipeCount, false otherwise
+                //        {
+                //            var pt = Data.startpts_[sel];
+                //            var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                //            string fieldName = $"Core_{sel:00}";
+                //            //if (key != null) { }
+                //            var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
+                //            //{(element.Location as LocationPoint).Point}
+                //            entity.Set(fieldName, value);
+
+                //            //for (int i = 0; i < cores.Length; i++)
+                //            //{
+                //            //    cores[sel] = new CoresData(sel.ToString(),location,status);
+                //            //}
+                //        }
+                //        else
+                //        {
+                //            var pt = Data.startpts_[sel];
+                //            var key = Data.startptsExSt_.FirstOrDefault(x => x.Value.Equals(pt)).Key;
+                //            string fieldName = $"Core_{sel:00}";
+                //            status = false;
+                //            var value = $"{key}_{status}_{beam.Id}_{pipe.Id}_{location}";
+                //            entity.Set(fieldName, value);
+                //            //cores[sel] = new CoresData(sel.ToString(), location, status);
+                //        }
+                //    }
+                //}
             }
             catch (Exception ex)
             {
