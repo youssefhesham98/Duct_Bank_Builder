@@ -175,6 +175,7 @@ namespace Duck_Bank_Builder.UI
         private void over_db_Click(object sender, EventArgs e)
         {
             userselect = int.Parse(userselection.Text);
+            //Data.Beams.Clear();
             ExCmd.exevt.request = Request.WriteDB;
             ExCmd.exevthan.Raise();
 

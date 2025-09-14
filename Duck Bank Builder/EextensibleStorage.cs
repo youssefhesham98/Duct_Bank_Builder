@@ -159,6 +159,7 @@ namespace Duck_Bank_Builder
                             }
                         }
                     }
+                    Data.beams_entities[beam] = entity;
                 }
 
                 //foreach (var sel in userselections)
