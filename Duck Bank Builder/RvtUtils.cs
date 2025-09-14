@@ -195,7 +195,7 @@ namespace Duck_Bank_Builder
 
                         bool status = true;
                         Schema schema = EextensibleStorage.CreateSchema();
-                        EextensibleStorage.WriteInstallationData(duct, count,userselections);
+                        //EextensibleStorage.WriteInstallationData(duct, count,userselections);
                         Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
                         Data.listST.Add(Read_entity_);
 
@@ -208,7 +208,7 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static void WriteDB(Document doc, UIDocument uidoc,List<Element> beams, int count, List<int> userselections)
+        public static void WriteDB(Document doc, UIDocument uidoc/*,List<Element> beams, int count, List<int> userselections*/)
         {
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             foreach (var ele in pickedRef)
@@ -218,29 +218,33 @@ namespace Duck_Bank_Builder
             }
 
             Schema schema = EextensibleStorage.CreateSchema();
-            EextensibleStorage.WriteInstallationData(duct, count, userselections);
-
-            foreach (var duct in beams)
+            foreach (var ele in Data.Beams)
             {
-                if (duct != null)
-                {
-                    foreach (var userselection in userselections)
-                    {
-                        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
-
-                        bool status = true;
-                        Schema schema = EextensibleStorage.CreateSchema();
-                        EextensibleStorage.WriteInstallationData(duct, count, userselections);
-                        Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
-                        Data.listST.Add(Read_entity_);
-
-                        EextensibleStorage.ExportEntityToXml(Read_entity_, path);
-                        TaskDialog.Show("Export", $"Data exported to:\n{path}");
-
-
-                    }
-                }
+                EextensibleStorage.WriteInstallationData(ele/*duct, count, userselections*/);
             }
+           
+
+            //foreach (var duct in beams)
+            //{
+            //    if (duct != null)
+            //    {
+            //        foreach (var userselection in userselections)
+            //        {
+            //            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+
+            //            bool status = true;
+            //            Schema schema = EextensibleStorage.CreateSchema();
+            //            EextensibleStorage.WriteInstallationData(duct, count, userselections);
+            //            Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
+            //            Data.listST.Add(Read_entity_);
+
+            //            EextensibleStorage.ExportEntityToXml(Read_entity_, path);
+            //            TaskDialog.Show("Export", $"Data exported to:\n{path}");
+
+
+            //        }
+            //    }
+            //}
         }
     }
 

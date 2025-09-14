@@ -76,7 +76,7 @@ namespace Duck_Bank_Builder
             return Sc;
         }
 
-        public static void WriteInstallationData(Element element, int pipeCount, List<int> userselections)
+        public static void WriteInstallationData(Element element/*, int pipeCount, List<int> userselections*/)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)

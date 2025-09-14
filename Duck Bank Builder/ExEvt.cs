@@ -27,6 +27,9 @@ namespace Duck_Bank_Builder
                 case Request.Create_DB:
                     RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count,Data.userselections);
                     break;
+                case Request.WriteDB:
+                    RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc);
+                    break;
             }
         }
 
@@ -37,7 +40,8 @@ namespace Duck_Bank_Builder
         public enum Request
         {
             Create_Pipes,
-            Create_DB
+            Create_DB,
+            WriteDB
         }
     }
 }
