@@ -22,6 +22,7 @@ namespace Duck_Bank_Builder.UI
         public static PipingSystemType pipingsys { get; set; }
         public static PipeType pipetype { get; set; }
         public static List<int> usersel{ get; set; }
+        public static int userselect { get; set; }
         //public static List<int> count_list { get; set; }
         public Mainform()
         {
@@ -167,8 +168,16 @@ namespace Duck_Bank_Builder.UI
         private void crt_db_Click(object sender, EventArgs e)
         {
             //usersel = Data.userselections;
-            ExCmd.exevt.request = Request.Create_DB;
+            ExCmd.exevt.request = Request.WriteDB;
             ExCmd.exevthan.Raise();
+        }
+
+        private void over_db_Click(object sender, EventArgs e)
+        {
+            userselect = int.Parse(userselection.Text);
+            ExCmd.exevt.request = Request.WriteDB;
+            ExCmd.exevthan.Raise();
+
         }
     }
 }

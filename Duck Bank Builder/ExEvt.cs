@@ -28,7 +28,7 @@ namespace Duck_Bank_Builder
                     RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count,Data.userselections);
                     break;
                 case Request.WriteDB:
-                    RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc);
+                    RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc, Mainform.userselect);
                     break;
             }
         }

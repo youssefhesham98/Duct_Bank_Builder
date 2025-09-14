@@ -38,6 +38,7 @@
             this.cls = new System.Windows.Forms.PictureBox();
             this.userselection = new System.Windows.Forms.TextBox();
             this.crt_db = new System.Windows.Forms.Button();
+            this.over_db = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.lnkd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.edecs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cls)).BeginInit();
@@ -135,11 +136,22 @@
             this.crt_db.UseVisualStyleBackColor = true;
             this.crt_db.Click += new System.EventHandler(this.crt_db_Click);
             // 
+            // over_db
+            // 
+            this.over_db.Location = new System.Drawing.Point(530, 78);
+            this.over_db.Name = "over_db";
+            this.over_db.Size = new System.Drawing.Size(75, 23);
+            this.over_db.TabIndex = 12;
+            this.over_db.Text = "Override DB";
+            this.over_db.UseVisualStyleBackColor = true;
+            this.over_db.Click += new System.EventHandler(this.over_db_Click);
+            // 
             // Mainform
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(619, 305);
+            this.Controls.Add(this.over_db);
             this.Controls.Add(this.crt_db);
             this.Controls.Add(this.userselection);
             this.Controls.Add(this.cls);
@@ -175,5 +187,6 @@
         private System.Windows.Forms.PictureBox cls;
         private System.Windows.Forms.TextBox userselection;
         private System.Windows.Forms.Button crt_db;
+        private System.Windows.Forms.Button over_db;
     }
 }

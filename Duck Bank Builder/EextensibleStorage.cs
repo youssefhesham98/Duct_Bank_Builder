@@ -76,7 +76,7 @@ namespace Duck_Bank_Builder
             return Sc;
         }
 
-        public static void WriteInstallationData(Element element/*, int pipeCount, List<int> userselections*/)
+        public static void WriteInstallationData(Element element, int userInput/*, int pipeCount, List<int> userselections*/)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
@@ -117,13 +117,46 @@ namespace Duck_Bank_Builder
             // Loop through 20 core fields
             try
             {
+                //foreach (var beam in Data.Beams)
+                //{
+                //    if (beam != null)
+                //    {
+                //        for (int i = 1; i <= 20; i++)
+                //        {
+                //            entity.Set($"Core_{i:00}", "False");
+                //        }
+                //    }
+                //}
+
                 foreach (var beam in Data.Beams)
                 {
                     if (beam != null)
                     {
+                        int count = 0; // how many "true" we've set so far
+
                         for (int i = 1; i <= 20; i++)
                         {
-                            entity.Set($"Core_{i:00}","False");
+                            string fieldName = $"Core_{i:00}";
+
+                            // get current value
+                            string currentValue = entity.Get<string>(fieldName);
+
+                            if (currentValue == "True")
+                            {
+                                // already true → skip
+                                continue;
+                            }
+                            else if (count < userInput)
+                            {
+                                // if still need to set more true, do it
+                                entity.Set(fieldName, "True");
+                                count++;
+                            }
+                            else
+                            {
+                                // past the required number → make sure it stays false
+                                entity.Set(fieldName, "False");
+                            }
                         }
                     }
                 }
