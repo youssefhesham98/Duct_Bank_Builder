@@ -208,7 +208,7 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static void WriteDB(Document doc, UIDocument uidoc, int userInput)
+        public static void WriteDB(Document doc, UIDocument uidoc, int userInput, List<Element>beams)
         {
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             foreach (var ele in pickedRef)
@@ -218,10 +218,8 @@ namespace Duck_Bank_Builder
             }
 
             Schema schema = EextensibleStorage.CreateSchema();
-            foreach (var ele in Data.Beams)
-            {
-                EextensibleStorage.WriteInstallationData(ele, userInput);
-            }
+            EextensibleStorage.WriteInstallationData(userInput, beams);
+
         }
     }
 

@@ -76,7 +76,7 @@ namespace Duck_Bank_Builder
             return Sc;
         }
 
-        public static void WriteInstallationData(Element element, int userInput/*, int pipeCount, List<int> userselections*/)
+        public static void WriteInstallationData(int userInput, List<Element> beams/*, int pipeCount, List<int> userselections*/)
         {
             Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
@@ -84,11 +84,11 @@ namespace Duck_Bank_Builder
                 schema = CreateSchema();
             }
 
-            Entity entity = new Entity(schema);
-            entity.Set("Author", "EDECS BIM UNIT");
-            entity.Set("Version", 1);
-            entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
-            entity.Set("ElemedID", element.Id);
+            //Entity entity = new Entity(schema);
+            //entity.Set("Author", "EDECS BIM UNIT");
+            //entity.Set("Version", 1);
+            //entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+            //entity.Set("ElemedID", element.Id);
             //var cores = new CoresData[Data.userselections.Count];
             //entity.Set("Cores", cores);
 
@@ -128,8 +128,13 @@ namespace Duck_Bank_Builder
                 //    }
                 //}
 
-                foreach (var beam in Data.Beams)
+                foreach (var beam in beams)
                 {
+                    Entity entity = beam.GetEntity(schema);
+                    entity.Set("Author", "EDECS BIM UNIT");
+                    entity.Set("Version", 1);
+                    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                    entity.Set("ElemedID", beam.Id);
                     if (beam != null)
                     {
                         int count = 0; // how many "true" we've set so far
@@ -160,6 +165,12 @@ namespace Duck_Bank_Builder
                         }
                     }
                     Data.beams_entities[beam] = entity;
+                    using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
+                    {
+                        t.Start();
+                        beam.SetEntity(entity);
+                        t.Commit();
+                    }
                 }
 
                 //foreach (var sel in userselections)
@@ -201,12 +212,6 @@ namespace Duck_Bank_Builder
             catch (Exception ex)
             {
                 TaskDialog.Show("Key", ex.Message);
-            }
-            using (Transaction t = new Transaction(element.Document, "Write Installation Data"))
-            {
-                t.Start();
-                element.SetEntity(entity);
-                t.Commit();
             }
         }
 
