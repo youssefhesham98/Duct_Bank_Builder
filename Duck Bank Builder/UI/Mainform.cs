@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.UI;
+using DocumentFormat.OpenXml;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -179,6 +180,14 @@ namespace Duck_Bank_Builder.UI
             ExCmd.exevt.request = Request.WriteDB;
             ExCmd.exevthan.Raise();
 
+        }
+
+        private void xmltoexcel_Click(object sender, EventArgs e)
+        {
+            string xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
+            string excel_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xlsx";
+
+            EextensibleStorage.XmlToExcel(xml_path, excel_path);
         }
     }
 }

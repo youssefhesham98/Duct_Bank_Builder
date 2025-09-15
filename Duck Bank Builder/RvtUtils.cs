@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Shapes;
 using static Autodesk.Revit.DB.SpecTypeId;
 
 namespace Duck_Bank_Builder
@@ -191,7 +192,7 @@ namespace Duck_Bank_Builder
                 {
                     foreach (var userselection in userselections)
                     {
-                        string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+                        string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
 
                         bool status = true;
                         Schema schema = EextensibleStorage.CreateSchema();
@@ -199,7 +200,7 @@ namespace Duck_Bank_Builder
                         Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
                         Data.listST.Add(Read_entity_);
 
-                        EextensibleStorage.ExportEntityToXml(Read_entity_, path);
+                        //EextensibleStorage.ExportEntityToXml(Read_entity_, path);
                         TaskDialog.Show("Export", $"Data exported to:\n{path}");
 
 
@@ -210,6 +211,9 @@ namespace Duck_Bank_Builder
 
         public static void WriteDB(Document doc, UIDocument uidoc, int userInput, List<Element>beams)
         {
+            //List<Entity> entities = new List<Entity>();
+            string xml_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+            string excel_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xlsx");
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             foreach (var ele in pickedRef)
             {
@@ -219,6 +223,13 @@ namespace Duck_Bank_Builder
 
             Schema schema = EextensibleStorage.CreateSchema();
             EextensibleStorage.WriteInstallationData(userInput, beams);
+            foreach (var beam in beams)
+            {
+                Data.listST.Add(EextensibleStorage.ReadInstallationData(beam));
+                //entities.Add(EextensibleStorage.ReadInstallationData(beam));
+            }
+
+            EextensibleStorage.ExportEntityToXml(Data.listST, xml_path);
 
         }
     }

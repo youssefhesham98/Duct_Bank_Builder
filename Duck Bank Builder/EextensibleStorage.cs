@@ -10,6 +10,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Duck_Bank_Builder
 {
@@ -17,9 +20,9 @@ namespace Duck_Bank_Builder
     {
         public static Guid SchemaGuid = new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB");
 
-        public static Schema CreateSchema()
+        public static Autodesk.Revit.DB.ExtensibleStorage.Schema CreateSchema()
         {
-            Schema schema = Schema.Lookup(SchemaGuid);
+            Autodesk.Revit.DB.ExtensibleStorage.Schema schema = Autodesk.Revit.DB.ExtensibleStorage.Schema.Lookup(SchemaGuid);
             if (schema != null) return schema;
 
             SchemaBuilder sb = new SchemaBuilder(SchemaGuid);
@@ -29,7 +32,7 @@ namespace Duck_Bank_Builder
             sb.SetDocumentation("Schema for storing installation data on elements");
             //sb.AddArrayField("CoreValues", typeof(double));
             //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
-            sb.SetSchemaName("DuckBuilderSchema");
+            sb.SetSchemaName("DuctBuilderSchema");
             sb.AddSimpleField("Author", typeof(string));
             sb.AddSimpleField("Version", typeof(int));
             sb.AddSimpleField("CreatedOn", typeof(string));
@@ -62,7 +65,7 @@ namespace Duck_Bank_Builder
             //sb.AddSimpleField("Status", typeof(string));
             //sb.AddSimpleField("Installer", typeof(string));
             //sb.AddSimpleField("LastUpdated", typeof(string));
-            Schema Sc = null;
+            Autodesk.Revit.DB.ExtensibleStorage.Schema Sc = null;
             try
             {
                 Sc = sb.Finish();
@@ -78,7 +81,7 @@ namespace Duck_Bank_Builder
 
         public static void WriteInstallationData(int userInput, List<Element> beams/*, int pipeCount, List<int> userselections*/)
         {
-            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            Autodesk.Revit.DB.ExtensibleStorage.Schema schema = Autodesk.Revit.DB.ExtensibleStorage.Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
             {
                 schema = CreateSchema();
@@ -131,6 +134,8 @@ namespace Duck_Bank_Builder
                 //}
                 #endregion
 
+                #region Assign per beam
+
                 //foreach (var beam in beams)
                 //{
                 //    Entity entity = beam.GetEntity(schema);
@@ -175,6 +180,7 @@ namespace Duck_Bank_Builder
                 //        t.Commit();
                 //    }
                 //}
+                #endregion
 
                 int coresPerBeam = userInput;
 
@@ -205,9 +211,6 @@ namespace Duck_Bank_Builder
                         assigned++;
                     }
 
-                    // 🔑 Note: we don’t touch old "True" values, we only add new ones
-                    // and we don’t force any "False" reset.
-
                     Data.beams_entities[beam] = entity;
                     using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
                     {
@@ -216,7 +219,6 @@ namespace Duck_Bank_Builder
                         t.Commit();
                     }
                 }
-
 
                 #region Comparing_Try
 
@@ -348,7 +350,7 @@ namespace Duck_Bank_Builder
 
         public static Entity ReadInstallationData(Element element)
         {
-            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            Autodesk.Revit.DB.ExtensibleStorage.Schema schema = Autodesk.Revit.DB.ExtensibleStorage.Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null) TaskDialog.Show("Error", "Schema Failed.");
 
             StringBuilder sb = new StringBuilder();
@@ -381,84 +383,209 @@ namespace Duck_Bank_Builder
                 string core_18 = entity.Get<string>("Core_18");
                 string core_19 = entity.Get<string>("Core_19");
                 string core_20 = entity.Get<string>("Core_20");
-                //var cores = entity.Get<CoresData[]>("Cores");
 
-                //foreach (var core in cores)
+                //// Collect the boolean core values
+                //sb.AppendLine($"Author: {author}");
+                //sb.AppendLine($"Version: {version}");
+                //sb.AppendLine($"Created On: {createdOn}");
+                //sb.AppendLine($"ElementId: {elementid}");
+                ////sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
+                //sb.AppendLine();
+                //sb.AppendLine("Core Values:");
+
+                //for (int i = 1; i <= 20; i++)
                 //{
-                //    if (core != null)
-                //    {
-                //        sb.AppendLine($"Core Index: {core.CoreIndex}, Origin: {core.Origin}, Is Filled: {core.IsFilled}");
-                //    }
+                //    string coreVal = entity.Get<string>($"Core_{i:00}");
+                //    sb.AppendLine($"  Core_{i:00}: {coreVal}");
                 //}
-
-                // Collect the boolean core values
-                sb.AppendLine($"Author: {author}");
-                sb.AppendLine($"Version: {version}");
-                sb.AppendLine($"Created On: {createdOn}");
-                sb.AppendLine($"ElementId: {elementid}");
-                //sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
-                sb.AppendLine();
-                sb.AppendLine("Core Values:");
-
-                for (int i = 1; i <= 20; i++)
-                {
-                    string coreVal = entity.Get<string>($"Core_{i:00}");
-                    sb.AppendLine($"  Core_{i:00}: {coreVal}");
-                }
             }
-            TaskDialog.Show("Extensible Storage Data", sb.ToString());
+            //TaskDialog.Show("Extensible Storage Data", sb.ToString());
             return entity;
         }
 
-        public static void ExportEntityToXml(Entity entity, string filePath)
+        public static void ExportEntityToXml(List<Entity> entities, string filePath)
         {
-            if (!entity.IsValid())
-                throw new InvalidOperationException("Invalid or empty entity.");
 
-            Schema schema = entity.Schema;
-            if (schema == null)
-                throw new InvalidOperationException("Schema not found.");
+            // Root XML
+            XElement root = new XElement("ExtensibleStorageData");
 
-            // Root XML element
-            XElement root = new XElement("ExtensibleStorage",
-                new XAttribute("SchemaName", schema.SchemaName),
-                new XAttribute("SchemaGUID", schema.GUID.ToString())
-            );
-
-            // Iterate all fields in schema
-            foreach (Field field in schema.ListFields())
+            // Iterate over entities
+            foreach (var entity in entities)
             {
-                string fieldName = field.FieldName;
-                Type fieldType = field.ValueType;
+                if (!entity.IsValid())
+                    continue;
 
-                object value = null;
-                try
+                Autodesk.Revit.DB.ExtensibleStorage.Schema schema = entity.Schema;
+                if (schema == null)
+                    continue;
+
+                // Create entity node
+                XElement entityNode = new XElement("Entity",
+                    new XAttribute("SchemaName", schema.SchemaName),
+                    new XAttribute("SchemaGUID", schema.GUID.ToString())
+                );
+
+                // Iterate fields
+                foreach (Autodesk.Revit.DB.ExtensibleStorage.Field field in schema.ListFields())
                 {
-                    // Generic Get<T> using reflection
-                    var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
-                    var generic = method.MakeGenericMethod(fieldType);
-                    value = generic.Invoke(entity, new object[] { fieldName });
-                }
-                catch
-                {
-                    value = "Unsupported type";
+                    string fieldName = field.FieldName;
+                    Type fieldType = field.ValueType;
+
+                    object value = null;
+                    try
+                    {
+                        // Generic Get<T>
+                        var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
+                        var generic = method.MakeGenericMethod(fieldType);
+                        value = generic.Invoke(entity, new object[] { fieldName });
+                    }
+                    catch
+                    {
+                        value = "Unsupported type";
+                    }
+
+                    // Skip unwanted fields
+                    if ((fieldName == "CoreValues" || fieldName == "ElementOrigin") && value.ToString() == "Unsupported type")
+                        continue;
+
+                    // Add field to entity XML
+                    entityNode.Add(new XElement("Field",
+                        new XAttribute("Name", fieldName),
+                        new XAttribute("Type", fieldType.Name),
+                        value?.ToString() ?? "null"
+                    ));
                 }
 
-                // Write into XML
-                root.Add(new XElement("Field",
-                    new XAttribute("Name", fieldName),
-                    new XAttribute("Type", fieldType.Name),
-                    value?.ToString() ?? "null"
-                ));
+                // Add entity to root
+                root.Add(entityNode);
             }
 
-            // Save to file
+            // Save XML
             XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
             doc.Save(filePath);
+
+            #region Try
+            //foreach (var entity in entities)
+            //{
+            //    if (!entity.IsValid())
+            //        throw new InvalidOperationException("Invalid or empty entity.");
+
+            //    Schema schema = entity.Schema;
+            //    if (schema == null)
+            //        throw new InvalidOperationException("Schema not found.");
+
+            //    // Root XML element
+            //    XElement root = new XElement("ExtensibleStorage",
+            //        new XAttribute("SchemaName", schema.SchemaName),
+            //        new XAttribute("SchemaGUID", schema.GUID.ToString())
+            //    );
+
+            //    // Iterate all fields in schema
+            //    foreach (Field field in schema.ListFields())
+            //    {
+            //        string fieldName = field.FieldName;
+            //        Type fieldType = field.ValueType;
+
+            //        object value = null;
+            //        try
+            //        {
+            //            // Generic Get<T> using reflection
+            //            var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
+            //            var generic = method.MakeGenericMethod(fieldType);
+            //            value = generic.Invoke(entity, new object[] { fieldName });
+            //        }
+            //        catch
+            //        {
+            //            value = "Unsupported type";
+            //        }
+
+            //        // Write into XML
+            //        root.Add(new XElement("Field",
+            //            new XAttribute("Name", fieldName),
+            //            new XAttribute("Type", fieldType.Name),
+            //            value?.ToString() ?? "null"
+            //        ));
+            //    }
+
+            //    // Save to file
+            //    XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
+            //    doc.Save(filePath);
+            //}
+            #endregion
+
+        }
+
+        // Convert XML to Excel
+        public static void XmlToExcel(string xmlPath, string excelPath)
+        {
+            // Load XML
+            XDocument xmlDoc = XDocument.Load(xmlPath);
+
+            using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(excelPath, SpreadsheetDocumentType.Workbook))
+            {
+                WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
+                workbookPart.Workbook = new Workbook();
+
+                WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+                worksheetPart.Worksheet = new Worksheet(new SheetData());
+
+                Sheets sheets = spreadsheet.WorkbookPart.Workbook.AppendChild(new Sheets());
+                Sheet sheet = new Sheet()
+                {
+                    Id = spreadsheet.WorkbookPart.GetIdOfPart(worksheetPart),
+                    SheetId = 1,
+                    Name = "ExtensibleStorage"
+                };
+                sheets.Append(sheet);
+
+                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+
+                // Header row
+                Row headerRow = new Row();
+                headerRow.Append(
+                    ConstructCell("SchemaName", CellValues.String),
+                    ConstructCell("SchemaGUID", CellValues.String),
+                    ConstructCell("FieldName", CellValues.String),
+                    ConstructCell("Type", CellValues.String),
+                    ConstructCell("Value", CellValues.String)
+                );
+                sheetData.Append(headerRow);
+
+                // Iterate XML
+                foreach (var entity in xmlDoc.Descendants("Entity"))
+                {
+                    string schemaName = entity.Attribute("SchemaName")?.Value;
+                    string schemaGuid = entity.Attribute("SchemaGUID")?.Value;
+
+                    foreach (var field in entity.Descendants("Field"))
+                    {
+                        Row row = new Row();
+                        row.Append(
+                            ConstructCell(schemaName, CellValues.String),
+                            ConstructCell(schemaGuid, CellValues.String),
+                            ConstructCell(field.Attribute("Name")?.Value, CellValues.String),
+                            ConstructCell(field.Attribute("Type")?.Value, CellValues.String),
+                            ConstructCell(field.Value, CellValues.String)
+                        );
+                        sheetData.Append(row);
+                    }
+                }
+
+                workbookPart.Workbook.Save();
+            }
+        }
+
+        // Helper to construct cells
+        public static Cell ConstructCell(string value, CellValues dataType)
+        {
+            return new Cell()
+            {
+                CellValue = new CellValue(value ?? ""),
+                DataType = new EnumValue<CellValues>(dataType)
+            };
         }
 
         // Helper Methods
-
         public static void WritePoint(Entity ent, XYZ point)
         {
             // Convert XYZ to a list of doubles
