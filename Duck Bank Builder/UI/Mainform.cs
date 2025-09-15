@@ -14,6 +14,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using static Duck_Bank_Builder.ExEvt;
 
 namespace Duck_Bank_Builder.UI
@@ -184,10 +190,12 @@ namespace Duck_Bank_Builder.UI
 
         private void xmltoexcel_Click(object sender, EventArgs e)
         {
-            string xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
-            string excel_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xlsx";
+            Data.xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
+            Data.excel_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xlsx";
 
-            EextensibleStorage.XmlToExcel(xml_path, excel_path);
+            //ExCmd.exevt.request = Request.ExportDB;
+            //ExCmd.exevthan.Raise();
+            EextensibleStorage.ExportXmlToExcel(Data.xml_path, Data.excel_path);
         }
     }
 }

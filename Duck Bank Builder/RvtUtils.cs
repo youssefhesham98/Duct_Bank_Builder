@@ -212,8 +212,10 @@ namespace Duck_Bank_Builder
         public static void WriteDB(Document doc, UIDocument uidoc, int userInput, List<Element>beams)
         {
             //List<Entity> entities = new List<Entity>();
-            string xml_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
-            string excel_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xlsx");
+            //string xml_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+            //string excel_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xlsx");
+            string xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
+            string excel_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xlsx";
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             foreach (var ele in pickedRef)
             {
@@ -229,7 +231,11 @@ namespace Duck_Bank_Builder
                 //entities.Add(EextensibleStorage.ReadInstallationData(beam));
             }
 
-            EextensibleStorage.ExportEntityToXml(Data.listST, xml_path);
+            //EextensibleStorage.ExportEntityToXml(Data.listST, xml_path);
+
+            //EextensibleStorage.ExportEntities(Data.listST, xml_path, excel_path);
+            EextensibleStorage.xmlexporter(Data.listST, xml_path);
+            EextensibleStorage.excelexporter(Data.listST, excel_path);
 
         }
     }

@@ -13,6 +13,9 @@ using System.Xml.Linq;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using Schema = Autodesk.Revit.DB.ExtensibleStorage.Schema;
 
 namespace Duck_Bank_Builder
 {
@@ -403,6 +406,213 @@ namespace Duck_Bank_Builder
             return entity;
         }
 
+        /// <summary>
+        /// Export entities to XML file
+        /// </summary>
+        public static void xmlexporter(List<Entity> entities, string xmlPath)
+        {
+            XElement root = new XElement("ExtensibleStorageData");
+
+            foreach (var entity in entities)
+            {
+                if (!entity.IsValid()) continue;
+                Autodesk.Revit.DB.ExtensibleStorage.Schema schema = entity.Schema;
+                if (schema == null) continue;
+
+                XElement entityNode = new XElement("Entity",
+                    new XAttribute("SchemaName", schema.SchemaName),
+                    new XAttribute("SchemaGUID", schema.GUID.ToString())
+                );
+
+                foreach (Autodesk.Revit.DB.ExtensibleStorage.Field field in schema.ListFields())
+                {
+                    string fieldName = field.FieldName;
+                    Type fieldType = field.ValueType;
+
+                    object value = null;
+                    try
+                    {
+                        var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
+                        var generic = method.MakeGenericMethod(fieldType);
+                        value = generic.Invoke(entity, new object[] { fieldName });
+                    }
+                    catch
+                    {
+                        value = "Unsupported type";
+                    }
+
+                    // Skip unwanted fields
+                    if ((fieldName == "CoreValues" || fieldName == "ElementOrigin") && value.ToString() == "Unsupported type")
+                        continue;
+
+                    entityNode.Add(new XElement("Field",
+                        new XAttribute("Name", fieldName),
+                        new XAttribute("Type", fieldType.Name),
+                        value?.ToString() ?? "null"
+                    ));
+                }
+
+                root.Add(entityNode);
+            }
+
+            XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
+            doc.Save(xmlPath);
+        }
+
+        /// <summary>
+        /// Export entities to Excel file
+        /// </summary>
+        public static void excelexporter(List<Entity> entities, string excelPath)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            using (var package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("ExtensibleStorage");
+
+                // Header row
+                ws.Cells[1, 1].Value = "SchemaName";
+                ws.Cells[1, 2].Value = "SchemaGUID";
+                ws.Cells[1, 3].Value = "FieldName";
+                ws.Cells[1, 4].Value = "Type";
+                ws.Cells[1, 5].Value = "Value";
+
+                int row = 2;
+
+                foreach (var entity in entities)
+                {
+                    if (!entity.IsValid()) continue;
+                    Schema schema = entity.Schema;
+                    if (schema == null) continue;
+
+                    foreach (Autodesk.Revit.DB.ExtensibleStorage.Field field in schema.ListFields())
+                    {
+                        string fieldName = field.FieldName;
+                        Type fieldType = field.ValueType;
+
+                        object value = null;
+                        try
+                        {
+                            var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
+                            var generic = method.MakeGenericMethod(fieldType);
+                            value = generic.Invoke(entity, new object[] { fieldName });
+                        }
+                        catch
+                        {
+                            value = "Unsupported type";
+                        }
+
+                        // Skip unwanted fields
+                        if ((fieldName == "CoreValues" || fieldName == "ElementOrigin") && value.ToString() == "Unsupported type")
+                            continue;
+
+                        // Write to Excel
+                        ws.Cells[row, 1].Value = schema.SchemaName;
+                        ws.Cells[row, 2].Value = schema.GUID.ToString();
+                        ws.Cells[row, 3].Value = fieldName;
+                        ws.Cells[row, 4].Value = fieldType.Name;
+                        ws.Cells[row, 5].Value = value?.ToString() ?? "null";
+
+                        row++;
+                    }
+                }
+
+                // Auto fit columns
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // Save file
+                package.SaveAs(new FileInfo(excelPath));
+
+                Console.WriteLine($"Entities count: {entities.Count}");
+            }
+        }
+
+        public static void ExportEntities(List<Entity> entities, string xmlPath, string excelPath)
+        {
+            // Setup XML root
+            XElement root = new XElement("ExtensibleStorageData");
+
+            // Setup Excel
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("ExtensibleStorage");
+
+                // Excel headers
+                ws.Cells[1, 1].Value = "SchemaName";
+                ws.Cells[1, 2].Value = "SchemaGUID";
+                ws.Cells[1, 3].Value = "FieldName";
+                ws.Cells[1, 4].Value = "Type";
+                ws.Cells[1, 5].Value = "Value";
+
+                int row = 2;
+
+                // Process entities
+                foreach (var entity in entities)
+                {
+                    if (!entity.IsValid()) continue;
+                    Autodesk.Revit.DB.ExtensibleStorage.Schema schema = entity.Schema;
+                    if (schema == null) continue;
+
+                    // XML entity node
+                    XElement entityNode = new XElement("Entity",
+                        new XAttribute("SchemaName", schema.SchemaName),
+                        new XAttribute("SchemaGUID", schema.GUID.ToString())
+                    );
+
+                    foreach (Autodesk.Revit.DB.ExtensibleStorage.Field field in schema.ListFields())
+                    {
+                        string fieldName = field.FieldName;
+                        Type fieldType = field.ValueType;
+
+                        object value = null;
+                        try
+                        {
+                            var method = typeof(Entity).GetMethod("Get", new Type[] { typeof(string) });
+                            var generic = method.MakeGenericMethod(fieldType);
+                            value = generic.Invoke(entity, new object[] { fieldName });
+                        }
+                        catch
+                        {
+                            value = "Unsupported type";
+                        }
+
+                        // Skip unwanted fields
+                        if ((fieldName == "CoreValues" || fieldName == "ElementOrigin") && value.ToString() == "Unsupported type")
+                            continue;
+
+                        // Add to XML
+                        entityNode.Add(new XElement("Field",
+                            new XAttribute("Name", fieldName),
+                            new XAttribute("Type", fieldType.Name),
+                            value?.ToString() ?? "null"
+                        ));
+
+                        // Add to Excel
+                        ws.Cells[row, 1].Value = schema.SchemaName;
+                        ws.Cells[row, 2].Value = schema.GUID.ToString();
+                        ws.Cells[row, 3].Value = fieldName;
+                        ws.Cells[row, 4].Value = fieldType.Name;
+                        ws.Cells[row, 5].Value = value?.ToString() ?? "null";
+
+                        row++;
+                    }
+
+                    root.Add(entityNode);
+                }
+
+                // Save XML
+                XDocument doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"), root);
+                doc.Save(xmlPath);
+
+                // Format Excel
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // Save Excel
+                package.SaveAs(new FileInfo(excelPath));
+            }
+        }
+
         public static void ExportEntityToXml(List<Entity> entities, string filePath)
         {
 
@@ -520,7 +730,7 @@ namespace Duck_Bank_Builder
         {
             // Load XML
             XDocument xmlDoc = XDocument.Load(xmlPath);
-
+           
             using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(excelPath, SpreadsheetDocumentType.Workbook))
             {
                 WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
@@ -583,6 +793,53 @@ namespace Duck_Bank_Builder
                 CellValue = new CellValue(value ?? ""),
                 DataType = new EnumValue<CellValues>(dataType)
             };
+        }
+
+        public static void ExportXmlToExcel(string xmlPath, string excelPath)
+        {
+            // EPPlus license context (required since v5+)
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+            // Load the XML
+            XDocument xmlDoc = XDocument.Load(xmlPath);
+
+            using (var package = new ExcelPackage())
+            {
+                var ws = package.Workbook.Worksheets.Add("ExtensibleStorage");
+
+                // Header
+                ws.Cells[1, 1].Value = "SchemaName";
+                ws.Cells[1, 2].Value = "SchemaGUID";
+                ws.Cells[1, 3].Value = "FieldName";
+                ws.Cells[1, 4].Value = "Type";
+                ws.Cells[1, 5].Value = "Value";
+
+                int row = 2;
+
+                // Iterate over entities
+                foreach (var entity in xmlDoc.Descendants("Entity"))
+                {
+                    string schemaName = entity.Attribute("SchemaName")?.Value;
+                    string schemaGuid = entity.Attribute("SchemaGUID")?.Value;
+
+                    foreach (var field in entity.Descendants("Field"))
+                    {
+                        ws.Cells[row, 1].Value = schemaName;
+                        ws.Cells[row, 2].Value = schemaGuid;
+                        ws.Cells[row, 3].Value = field.Attribute("Name")?.Value;
+                        ws.Cells[row, 4].Value = field.Attribute("Type")?.Value;
+                        ws.Cells[row, 5].Value = field.Value;
+
+                        row++;
+                    }
+                }
+
+                // Auto-fit columns
+                ws.Cells[ws.Dimension.Address].AutoFitColumns();
+
+                // Save Excel file
+                File.WriteAllBytes(excelPath, package.GetAsByteArray());
+            }
         }
 
         // Helper Methods

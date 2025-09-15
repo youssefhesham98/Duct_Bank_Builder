@@ -4,6 +4,7 @@ using Autodesk.Revit.DB.Plumbing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,9 @@ namespace Duck_Bank_Builder
 {
     internal class Data
     {
-        // Categories
+        // Categories 
+        public static string xml_path { get; set; }
+        public static string excel_path { get; set; }
         public static List<Pipe> Pipes { get; set; }
         public static List<Element> Beams { get; set; }
         public static int col_points { get; set; }
