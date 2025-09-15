@@ -84,6 +84,7 @@ namespace Duck_Bank_Builder
                 schema = CreateSchema();
             }
 
+            #region Assign
             //Entity entity = new Entity(schema);
             //entity.Set("Author", "EDECS BIM UNIT");
             //entity.Set("Version", 1);
@@ -91,7 +92,6 @@ namespace Duck_Bank_Builder
             //entity.Set("ElemedID", element.Id);
             //var cores = new CoresData[Data.userselections.Count];
             //entity.Set("Cores", cores);
-
             //entity.Set("ElementOrigin", (element.Location as LocationPoint).Point);
             //entity.Set("Core_01", status);
             //entity.Set("Core_02", status);
@@ -113,10 +113,12 @@ namespace Duck_Bank_Builder
             //entity.Set("Core_18", status);
             //entity.Set("Core_19", status);
             //entity.Set("Core_20", status);
+            #endregion
 
             // Loop through 20 core fields
             try
             {
+                #region Assign
                 //foreach (var beam in Data.Beams)
                 //{
                 //    if (beam != null)
@@ -127,6 +129,54 @@ namespace Duck_Bank_Builder
                 //        }
                 //    }
                 //}
+                #endregion
+
+                //foreach (var beam in beams)
+                //{
+                //    Entity entity = beam.GetEntity(schema);
+                //    entity.Set("Author", "EDECS BIM UNIT");
+                //    entity.Set("Version", 1);
+                //    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                //    entity.Set("ElemedID", beam.Id);
+                //    if (beam != null)
+                //    {
+                //        int count = 0; // how many "true" we've set so far
+
+                //        for (int i = 1; i <= 20; i++)
+                //        {
+                //            string fieldName = $"Core_{i:00}";
+
+                //            // get current value
+                //            string currentValue = entity.Get<string>(fieldName);
+
+                //            if (currentValue == "True")
+                //            {
+                //                // already true → skip
+                //                continue;
+                //            }
+                //            else if (count < userInput)
+                //            {
+                //                // if still need to set more true, do it
+                //                entity.Set(fieldName, "True");
+                //                count++;
+                //            }
+                //            else
+                //            {
+                //                // past the required number → make sure it stays false
+                //                entity.Set(fieldName, "False");
+                //            }
+                //        }
+                //    }
+                //    Data.beams_entities[beam] = entity;
+                //    using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
+                //    {
+                //        t.Start();
+                //        beam.SetEntity(entity);
+                //        t.Commit();
+                //    }
+                //}
+
+                int coresPerBeam = userInput;
 
                 foreach (var beam in beams)
                 {
@@ -135,35 +185,29 @@ namespace Duck_Bank_Builder
                     entity.Set("Version", 1);
                     entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
                     entity.Set("ElemedID", beam.Id);
-                    if (beam != null)
+
+                    int assigned = 0;
+
+                    // Walk all cores in order
+                    for (int i = 1; i <= 20 && assigned < coresPerBeam; i++)
                     {
-                        int count = 0; // how many "true" we've set so far
+                        string fieldName = $"Core_{i:00}";
+                        string currentValue = entity.Get<string>(fieldName);
 
-                        for (int i = 1; i <= 20; i++)
+                        if (currentValue == "True")
                         {
-                            string fieldName = $"Core_{i:00}";
-
-                            // get current value
-                            string currentValue = entity.Get<string>(fieldName);
-
-                            if (currentValue == "True")
-                            {
-                                // already true → skip
-                                continue;
-                            }
-                            else if (count < userInput)
-                            {
-                                // if still need to set more true, do it
-                                entity.Set(fieldName, "True");
-                                count++;
-                            }
-                            else
-                            {
-                                // past the required number → make sure it stays false
-                                entity.Set(fieldName, "False");
-                            }
+                            // already taken → skip
+                            continue;
                         }
+
+                        // set new one to True
+                        entity.Set(fieldName, "True");
+                        assigned++;
                     }
+
+                    // 🔑 Note: we don’t touch old "True" values, we only add new ones
+                    // and we don’t force any "False" reset.
+
                     Data.beams_entities[beam] = entity;
                     using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
                     {
@@ -173,6 +217,91 @@ namespace Duck_Bank_Builder
                     }
                 }
 
+
+                #region Comparing_Try
+
+                //int coresPerBeam = userInput;
+                //List<int> lastAssignedIndices = new List<int>();
+
+                //for (int b = 0; b < beams.Count; b++)
+                //{
+                //    var beam = beams[b];
+                //    Entity entity = beam.GetEntity(schema);
+                //    entity.Set("Author", "EDECS BIM UNIT");
+                //    entity.Set("Version", 1);
+                //    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                //    entity.Set("ElemedID", beam.Id);
+
+                //    List<int> assignedIndices = new List<int>();
+
+                //    if (b == 0)
+                //    {
+                //        // First beam → assign the first free cores
+                //        for (int i = 1; i <= 20 && assignedIndices.Count < coresPerBeam; i++)
+                //        {
+                //            string fieldName = $"Core_{i:00}";
+                //            string currentValue = entity.Get<string>(fieldName);
+
+                //            if (currentValue != "True")
+                //            {
+                //                entity.Set(fieldName, "True");
+                //                assignedIndices.Add(i);
+                //            }
+                //        }
+                //    }
+                //    else
+                //    {
+                //        // Next beams → try to reuse the previous indices first
+                //        foreach (int idx in lastAssignedIndices)
+                //        {
+                //            string fieldName = $"Core_{idx:00}";
+                //            string currentValue = entity.Get<string>(fieldName);
+
+                //            if (currentValue != "True" && assignedIndices.Count < coresPerBeam)
+                //            {
+                //                entity.Set(fieldName, "True");
+                //                assignedIndices.Add(idx);
+                //            }
+                //        }
+
+                //        // If not enough cores assigned yet, slide forward to find more
+                //        int startIndex = lastAssignedIndices.Count > 0 ? lastAssignedIndices.Last() + 1 : 1;
+                //        for (int i = startIndex; i <= 20 && assignedIndices.Count < coresPerBeam; i++)
+                //        {
+                //            string fieldName = $"Core_{i:00}";
+                //            string currentValue = entity.Get<string>(fieldName);
+
+                //            if (currentValue != "True")
+                //            {
+                //                entity.Set(fieldName, "True");
+                //                assignedIndices.Add(i);
+                //            }
+                //        }
+                //    }
+
+                //    // Mark all unassigned cores explicitly as False
+                //    for (int i = 1; i <= 20; i++)
+                //    {
+                //        string fieldName = $"Core_{i:00}";
+                //        if (!assignedIndices.Contains(i))
+                //            entity.Set(fieldName, "False");
+                //    }
+
+                //    lastAssignedIndices = assignedIndices;
+
+                //    Data.beams_entities[beam] = entity;
+                //    using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
+                //    {
+                //        t.Start();
+                //        beam.SetEntity(entity);
+                //        t.Commit();
+                //    }
+                //}
+
+
+                #endregion
+
+                #region Assign_By_User_Selection
                 //foreach (var sel in userselections)
                 //{
                 //    if (sel != null)
@@ -208,6 +337,8 @@ namespace Duck_Bank_Builder
                 //        }
                 //    }
                 //}
+                #endregion
+
             }
             catch (Exception ex)
             {
