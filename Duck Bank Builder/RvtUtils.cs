@@ -215,7 +215,7 @@ namespace Duck_Bank_Builder
             //string xml_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
             //string excel_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xlsx");
             string xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
-            string excel_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xlsx";
+            string excel_path = @"D:\RevitEntityExport.xlsx";
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             foreach (var ele in pickedRef)
             {

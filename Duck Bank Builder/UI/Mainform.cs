@@ -183,6 +183,7 @@ namespace Duck_Bank_Builder.UI
         {
             userselect = int.Parse(userselection.Text);
             Data.Beams.Clear();
+            Data.listST.Clear();
             ExCmd.exevt.request = Request.WriteDB;
             ExCmd.exevthan.Raise();
 

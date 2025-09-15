@@ -523,8 +523,9 @@ namespace Duck_Bank_Builder
                 // Save file
                 package.SaveAs(new FileInfo(excelPath));
 
-                Console.WriteLine($"Entities count: {entities.Count}");
+                
             }
+            Console.WriteLine($"Entities count: {entities.Count}");
         }
 
         public static void ExportEntities(List<Entity> entities, string xmlPath, string excelPath)
