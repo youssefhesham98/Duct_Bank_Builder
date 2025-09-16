@@ -9,6 +9,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -181,22 +182,50 @@ namespace Duck_Bank_Builder.UI
 
         private void over_db_Click(object sender, EventArgs e)
         {
+            string title = savetitle.Text.Trim();
+            string folder = savedirectory.Text.Trim();
+
+            if (string.IsNullOrEmpty(title))
+            {
+                TaskDialog.Show("Error","Please enter a document title.");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(folder))
+            {
+                TaskDialog.Show("Error", "Please enter a path.");
+                return;
+            }
+
+            // Build file paths
+            Data.xml_path = Path.Combine(folder, title + ".xml");
+            Data.excel_path = Path.Combine(folder, title + ".xlsx");
+
             userselect = int.Parse(userselection.Text);
             Data.Beams.Clear();
             Data.listST.Clear();
+
+            //using (FolderBrowserDialog fbd = new FolderBrowserDialog())
+            //{
+            //    fbd.Description = "Select a folder";
+
+            //    if (fbd.ShowDialog() == DialogResult.OK)
+            //    {
+            //        string folderPath = fbd.SelectedPath;
+            //        MessageBox.Show("Selected folder: " + folderPath);
+            //    }
+            //}
+
             ExCmd.exevt.request = Request.WriteDB;
             ExCmd.exevthan.Raise();
 
         }
 
-        private void xmltoexcel_Click(object sender, EventArgs e)
+        private void bwsexcel_Click(object sender, EventArgs e)
         {
-            Data.xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
-            Data.excel_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xlsx";
-
-            //ExCmd.exevt.request = Request.ExportDB;
-            //ExCmd.exevthan.Raise();
-            EextensibleStorage.ExportXmlToExcel(Data.xml_path, Data.excel_path);
+            if (excellocation.ShowDialog() == DialogResult.OK)
+                savedirectory.Text = excellocation.SelectedPath;
         }
+
     }
 }

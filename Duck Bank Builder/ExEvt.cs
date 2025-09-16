@@ -28,10 +28,7 @@ namespace Duck_Bank_Builder
                     RvtUtils.CreateDB(Data.Beams,Data.Pipes.Count,Data.userselections);
                     break;
                 case Request.WriteDB:
-                    RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc, Mainform.userselect, Data.Beams);
-                    break;
-                case Request.ExportDB:
-                    EextensibleStorage.ExportXmlToExcel(Data.xml_path,Data.excel_path);
+                    RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc, Mainform.userselect, Data.Beams,Data.xml_path,Data.excel_path);
                     break;
             }
         }
@@ -45,7 +42,6 @@ namespace Duck_Bank_Builder
             Create_Pipes,
             Create_DB,
             WriteDB,
-            ExportDB,
         }
     }
 }
