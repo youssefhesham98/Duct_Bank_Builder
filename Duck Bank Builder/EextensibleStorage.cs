@@ -1,7 +1,14 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.ExtensibleStorage;
+using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Selection;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Duck_Bank_Builder.UI;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,11 +17,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 using Schema = Autodesk.Revit.DB.ExtensibleStorage.Schema;
 
 namespace Duck_Bank_Builder
@@ -23,52 +25,63 @@ namespace Duck_Bank_Builder
     {
         public static Guid SchemaGuid = new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB");
 
-        public static Autodesk.Revit.DB.ExtensibleStorage.Schema CreateSchema()
+        public static Schema CreateSchema()
         {
-            Autodesk.Revit.DB.ExtensibleStorage.Schema schema = Autodesk.Revit.DB.ExtensibleStorage.Schema.Lookup(SchemaGuid);
+            Schema schema = Schema.Lookup(SchemaGuid);
             if (schema != null) return schema;
 
             SchemaBuilder sb = new SchemaBuilder(SchemaGuid);
+            //##
             sb.SetReadAccessLevel(AccessLevel.Public);
             sb.SetWriteAccessLevel(AccessLevel.Public);
+            //##
             //sb.SetVendorId("YOUR_VENDOR_ID");
+            //##
             sb.SetDocumentation("Schema for storing installation data on elements");
+            //##
             //sb.AddArrayField("CoreValues", typeof(double));
             //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
+            //##
             sb.SetSchemaName("DuctBuilderSchema");
-            sb.AddSimpleField("Author", typeof(string));
-            sb.AddSimpleField("Version", typeof(int));
-            sb.AddSimpleField("CreatedOn", typeof(string));
+            //sb.AddSimpleField("Author", typeof(string));
+            //sb.AddSimpleField("Version", typeof(int));
+            //sb.AddSimpleField("CreatedOn", typeof(string));
+            //##
             //sb.AddArrayField("Cores", typeof(CoresData));
-            sb.AddSimpleField("ElemedID", typeof(ElementId));
+            //##
+            //sb.AddSimpleField("ElemedID", typeof(ElementId));
+            //##
             //var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
             //location.SetSpec(SpecTypeId.Length);
-            sb.AddSimpleField("Core_01", typeof(string));
-            sb.AddSimpleField("Core_02", typeof(string));
-            sb.AddSimpleField("Core_03", typeof(string));
-            sb.AddSimpleField("Core_04", typeof(string));
-            sb.AddSimpleField("Core_05", typeof(string));
-            sb.AddSimpleField("Core_06", typeof(string));
-            sb.AddSimpleField("Core_07", typeof(string));
-            sb.AddSimpleField("Core_08", typeof(string));
-            sb.AddSimpleField("Core_09", typeof(string));
-            sb.AddSimpleField("Core_10", typeof(string));
-            sb.AddSimpleField("Core_11", typeof(string));
-            sb.AddSimpleField("Core_12", typeof(string));
-            sb.AddSimpleField("Core_13", typeof(string));
-            sb.AddSimpleField("Core_14", typeof(string));
-            sb.AddSimpleField("Core_15", typeof(string));
-            sb.AddSimpleField("Core_16", typeof(string));
-            sb.AddSimpleField("Core_17", typeof(string));
-            sb.AddSimpleField("Core_18", typeof(string));
-            sb.AddSimpleField("Core_19", typeof(string));
-            sb.AddSimpleField("Core_20", typeof(string));
+            //##
+            sb.AddSimpleField("Cores", typeof(List<CoresData>));
+            //##
+            //sb.AddSimpleField("Core_01", typeof(string));
+            //sb.AddSimpleField("Core_02", typeof(string));
+            //sb.AddSimpleField("Core_03", typeof(string));
+            //sb.AddSimpleField("Core_04", typeof(string));
+            //sb.AddSimpleField("Core_05", typeof(string));
+            //sb.AddSimpleField("Core_06", typeof(string));
+            //sb.AddSimpleField("Core_07", typeof(string));
+            //sb.AddSimpleField("Core_08", typeof(string));
+            //sb.AddSimpleField("Core_09", typeof(string));
+            //sb.AddSimpleField("Core_10", typeof(string));
+            //sb.AddSimpleField("Core_11", typeof(string));
+            //sb.AddSimpleField("Core_12", typeof(string));
+            //sb.AddSimpleField("Core_13", typeof(string));
+            //sb.AddSimpleField("Core_14", typeof(string));
+            //sb.AddSimpleField("Core_15", typeof(string));
+            //sb.AddSimpleField("Core_16", typeof(string));
+            //sb.AddSimpleField("Core_17", typeof(string));
+            //sb.AddSimpleField("Core_18", typeof(string));
+            //sb.AddSimpleField("Core_19", typeof(string));
+            //sb.AddSimpleField("Core_20", typeof(string));
 
             // Add fields
             //sb.AddSimpleField("Status", typeof(string));
             //sb.AddSimpleField("Installer", typeof(string));
             //sb.AddSimpleField("LastUpdated", typeof(string));
-            Autodesk.Revit.DB.ExtensibleStorage.Schema Sc = null;
+            Schema Sc = null;
             try
             {
                 Sc = sb.Finish();
@@ -80,6 +93,62 @@ namespace Duck_Bank_Builder
                 TaskDialog.Show("Error", ex.Message);
             }
             return Sc;
+        }
+
+        public static void CreateDB(Document doc, UIDocument uidoc,List<Element> beams)
+        {
+            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
+            foreach (var ele in pickedRef)
+            {
+                Element element = doc.GetElement(ele);
+                Data.Beams.Add(element);
+            }
+
+            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            if (schema == null)
+            {
+                schema = CreateSchema();
+            }
+
+            List<CoresData> cores = new List<CoresData>();
+
+            foreach (var beam in beams)
+            {
+                ElementId elemedid = beam.Id;
+                string author = "EDECS BIM UNIT";
+                var schemaGUID = schema.GUID;
+                string schemaName = schema.SchemaName;
+                int version = 1;
+                string createdOn = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                var matrix = RvtUtils.GetBankData(beam);
+                for (int i = 0; i < Data.points_count; i++)
+                {
+                    CoresData core = new CoresData(author, schemaGUID.ToString(), schemaName, version, createdOn);
+                    core.Space = "0";
+                    core.Origin = "0";
+                    core.IsFilled = false;
+                    core.PtsCouunt = matrix[0];
+                    core.Rows = matrix[1];
+                    core.Columns = matrix[2];
+                    core.Matrix = matrix[3];
+                    cores.Add(core);
+                }
+                //##
+                Entity entity = beam.GetEntity(schema);
+                entity.Set("Cores", cores);
+                //entity.Set("Author", "EDECS BIM UNIT");
+                //entity.Set("Version", 1);
+                //entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                //entity.Set("ElemedID", beam.Id);
+
+                if (beam != null)
+                {
+                    for (int i = 1; i <= 20; i++)
+                    {
+                        entity.Set($"Core_{i:00}", "False");
+                    }
+                }
+            }
         }
 
         public static void WriteInstallationData(int userInput, List<Element> beams/*, int pipeCount, List<int> userselections*/)
@@ -124,19 +193,6 @@ namespace Duck_Bank_Builder
             // Loop through 20 core fields
             try
             {
-                #region Assign
-                //foreach (var beam in Data.Beams)
-                //{
-                //    if (beam != null)
-                //    {
-                //        for (int i = 1; i <= 20; i++)
-                //        {
-                //            entity.Set($"Core_{i:00}", "False");
-                //        }
-                //    }
-                //}
-                #endregion
-
                 #region Assign per beam
 
                 //foreach (var beam in beams)
