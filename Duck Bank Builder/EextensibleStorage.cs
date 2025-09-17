@@ -98,13 +98,13 @@ namespace Duck_Bank_Builder
         public static void CreateDB(Document doc, UIDocument uidoc)
         {
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
-            foreach (var ele in pickedRef)
-            {
-                Element element = doc.GetElement(ele);
-                Data.Beams.Add(element);
-            }
-
-            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            //foreach (var ele in pickedRef)
+            //{
+            //    Element element = doc.GetElement(ele);
+            //    //Data.Beams.Add(element);
+            //}
+            //"D1B2A3C4-E5F6-4789-ABCD-1234567890AB"
+            Schema schema = Schema.Lookup(new Guid("7DF186DD-65F7-47DF-86E9-4E64C79A61D3"));
             if (schema == null)
             {
                 schema = CreateSchema();
@@ -112,16 +112,19 @@ namespace Duck_Bank_Builder
 
             List<CoresData> cores = new List<CoresData>();
 
-            foreach (var beam in Data.Beams)
+            foreach (var beam in pickedRef)
             {
-                ElementId elemedid = beam.Id;
+                Element element = doc.GetElement(beam);
+                Data.Beams.Add(element);
+                ElementId elemedid = element.Id;
                 string author = "EDECS BIM UNIT";
                 var schemaGUID = schema.GUID;
                 string schemaName = schema.SchemaName;
                 int version = 1;
                 string createdOn = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
                 List<string> ptsdata;
-                var matrix = RvtUtils.GetBankData(beam,out ptsdata);
+                int CoresCount;
+                var matrix = RvtUtils.GetBankData(element,out ptsdata, out CoresCount);
                 for (int i = 0; i < Data.points_count; i++)
                 {
                     CoresData core = new CoresData(author, schemaGUID.ToString(), schemaName, version, createdOn);
@@ -138,9 +141,9 @@ namespace Duck_Bank_Builder
                     cores.Add(core);
                 }
                 //##
-                Entity entity = beam.GetEntity(schema);
+                Entity entity = element.GetEntity(schema);
                 entity.Set("Cores", cores);
-                Data.beams_entities[beam] = entity;
+                Data.beams_entities[element] = entity;
                 Data.listST.Add(entity);
                 //entity.Set("Author", "EDECS BIM UNIT");
                 //entity.Set("Version", 1);

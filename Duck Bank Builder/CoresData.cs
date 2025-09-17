@@ -24,6 +24,7 @@ namespace Duck_Bank_Builder
         public  int Rows { get; set; }
         public  int Columns { get; set; }
         public  int Matrix { get; set; }
+        public int CoresCount { get; set; }
 
 
         public CoresData(string author,string schemaGUID,string schemaName,int version,string createdOn)

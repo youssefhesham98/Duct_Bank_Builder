@@ -195,7 +195,7 @@ namespace Duck_Bank_Builder
                         string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
 
                         bool status = true;
-                        Schema schema = EextensibleStorage.CreateSchema();
+                        //Schema schema = EextensibleStorage.CreateSchema();
                         //EextensibleStorage.WriteInstallationData(duct, count,userselections);
                         Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
                         Data.listST.Add(Read_entity_);
@@ -217,7 +217,7 @@ namespace Duck_Bank_Builder
                 Data.Beams.Add(element);
             }
 
-            Schema schema = EextensibleStorage.CreateSchema();
+            //Schema schema = EextensibleStorage.CreateSchema();
             EextensibleStorage.WriteInstallationData(userInput, beams);
             foreach (var beam in beams)
             {
@@ -235,16 +235,17 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static List<int> GetBankData(Element ele, out List<string> ptsdata)
+        public static List<int> GetBankData(Element ele, out List<string> ptsdata, out int CoresCount)
         {
             List<int> data = new List<int>();
             ptsdata = new List<string>();
+            CoresCount = 0;
             double tolerance = 1e-6;
-            Data.startpts_ = new Dictionary<int, XYZ>();
-            Data.endpts_ = new Dictionary<int, XYZ>();
+            //Data.startpts_ = new Dictionary<int, XYZ>();
+            //Data.endpts_ = new Dictionary<int, XYZ>();
 
-            Dictionary<int, List<XYZ>> beamStartPoints = new Dictionary<int, List<XYZ>>();
-            Dictionary<int, List<XYZ>> beamEndPoints = new Dictionary<int, List<XYZ>>();
+            //Dictionary<int, List<XYZ>> beamStartPoints = new Dictionary<int, List<XYZ>>();
+            //Dictionary<int, List<XYZ>> beamEndPoints = new Dictionary<int, List<XYZ>>();
 
             foreach (var geometryinstance in ele.get_Geometry(new Options()).OfType<GeometryInstance>())
             {
@@ -295,17 +296,17 @@ namespace Duck_Bank_Builder
                     startorigins.Add(axisStart);
                     endorigins.Add(axisEnd);
 
-                    // Sort startorigins by Z, then by Y
-                    startorigins = startorigins
-                        .OrderBy(p => p.Z)
-                        .ThenBy(p => p.Y)
-                        .ToList();
+                    //// Sort startorigins by Z, then by Y
+                    //startorigins = startorigins
+                    //    .OrderBy(p => p.Z)
+                    //    .ThenBy(p => p.Y)
+                    //    .ToList();
 
-                    // Sort endorigins by Z, then by Y
-                    endorigins = endorigins
-                        .OrderBy(p => p.Z)
-                        .ThenBy(p => p.Y)
-                        .ToList();
+                    //// Sort endorigins by Z, then by Y
+                    //endorigins = endorigins
+                    //    .OrderBy(p => p.Z)
+                    //    .ThenBy(p => p.Y)
+                    //    .ToList();
 
                     // Unique Z values in startorigins
                     int uniqueStartZCount = startorigins
@@ -321,34 +322,35 @@ namespace Duck_Bank_Builder
 
                     var ptscount = startorigins.Count;
                     data.Add(ptscount);
+                    CoresCount = ptscount;
                     var rowpts  = uniqueStartZCount;
                     data.Add(rowpts);
                     var colpts = ptscount / uniqueStartZCount;
                     data.Add(colpts);
                     data.Add(rowpts * colpts);
 
-                    Data.points_count = ptscount;
+                    //Data.points_count = ptscount;
 
-                    Data.startpts = new XYZ[rowpts, colpts];
-                    Data.endpts = new XYZ[rowpts, colpts];
+                    //Data.startpts = new XYZ[rowpts, colpts];
+                    //Data.endpts = new XYZ[rowpts, colpts];
 
-                    for (int i = 0; i < rowpts; i++)
-                    {
-                        for (int j = 0; j < colpts; j++)
-                        {
-                            int index = i * colpts + j; // calculate 1D index
-                            Data.startpts[i, j] = startorigins[index];
-                        }
-                    }
+                    //for (int i = 0; i < rowpts; i++)
+                    //{
+                    //    for (int j = 0; j < colpts; j++)
+                    //    {
+                    //        int index = i * colpts + j; // calculate 1D index
+                    //        Data.startpts[i, j] = startorigins[index];
+                    //    }
+                    //}
 
-                    for (int i = 0; i < rowpts; i++)
-                    {
-                        for (int j = 0; j < colpts; j++)
-                        {
-                            int index = i * colpts + j; // calculate 1D index
-                            Data.endpts[i, j] = endorigins[index];
-                        }
-                    }
+                    //for (int i = 0; i < rowpts; i++)
+                    //{
+                    //    for (int j = 0; j < colpts; j++)
+                    //    {
+                    //        int index = i * colpts + j; // calculate 1D index
+                    //        Data.endpts[i, j] = endorigins[index];
+                    //    }
+                    //}
                 }
             }
             return data;
