@@ -54,7 +54,9 @@ namespace Duck_Bank_Builder
             //var location = sb.AddSimpleField("ElementOrigin", typeof(XYZ));
             //location.SetSpec(SpecTypeId.Length);
             //##
-            sb.AddSimpleField("Cores", typeof(List<CoresData>));
+            //sb.AddSimpleField("Cores", typeof(List<CoresData>));
+            sb.AddSimpleField("Cores", typeof(string));
+
             //##
             //sb.AddSimpleField("Core_01", typeof(string));
             //sb.AddSimpleField("Core_02", typeof(string));
@@ -97,14 +99,15 @@ namespace Duck_Bank_Builder
 
         public static void CreateDB(Document doc, UIDocument uidoc)
         {
+            StringBuilder sb = new StringBuilder();
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
             //foreach (var ele in pickedRef)
             //{
             //    Element element = doc.GetElement(ele);
             //    //Data.Beams.Add(element);
             //}
-            //"D1B2A3C4-E5F6-4789-ABCD-1234567890AB"
-            Schema schema = Schema.Lookup(new Guid("7DF186DD-65F7-47DF-86E9-4E64C79A61D3"));
+
+            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
             if (schema == null)
             {
                 schema = CreateSchema();
@@ -116,19 +119,25 @@ namespace Duck_Bank_Builder
             {
                 Element element = doc.GetElement(beam);
                 Data.Beams.Add(element);
+                Entity entity = new Entity(schema);
                 ElementId elemedid = element.Id;
                 string author = "EDECS BIM UNIT";
+                sb.AppendLine($"Author: {author}");
                 var schemaGUID = schema.GUID;
+                sb.AppendLine($"GUID: {schemaGUID}");
                 string schemaName = schema.SchemaName;
+                sb.AppendLine($"Schema NAme: {schemaName}");
                 int version = 1;
+                sb.AppendLine($"Version: {version}");
                 string createdOn = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
+                sb.AppendLine($"Created on: {createdOn}");
                 List<string> ptsdata;
                 int CoresCount;
-                var matrix = RvtUtils.GetBankData(element,out ptsdata, out CoresCount);
-                for (int i = 0; i < Data.points_count; i++)
+                var matrix = RvtUtils.GetBankData(element, out ptsdata, out CoresCount);
+                for (int i = 0; i < CoresCount; i++)
                 {
                     CoresData core = new CoresData(author, schemaGUID.ToString(), schemaName, version, createdOn);
-                    core.Space = "0"+"%";
+                    core.Space = "0" + "%";
                     core.Origin = ptsdata[0];
                     core.Area = ptsdata[1];
                     core.Startpt = ptsdata[2];
@@ -138,11 +147,25 @@ namespace Duck_Bank_Builder
                     core.Rows = matrix[1];
                     core.Columns = matrix[2];
                     core.Matrix = matrix[3];
+                    sb.AppendLine($"Core_{i:00}");
+                    sb.AppendLine($"Space: {core.Space}");
+                    sb.AppendLine($"Origin: {core.Origin}");
+                    sb.AppendLine($"Area: {core.Area}");
+                    sb.AppendLine($"Core Start Point : {core.Startpt}");
+                    sb.AppendLine($"Core End Point: {core.Endpt}");
+                    sb.AppendLine($"Status: {core.IsFilled}");
+                    sb.AppendLine($"Cores COunt: {core.PtsCouunt}");
+                    sb.AppendLine($"Rows: {core.Rows}");
+                    sb.AppendLine($"Columns: {core.Columns}");
+                    sb.AppendLine($"Matrix: {core.Matrix}");
+
                     cores.Add(core);
+                    entity.Set("Cores", sb.ToString());
                 }
                 //##
-                Entity entity = element.GetEntity(schema);
-                entity.Set("Cores", cores);
+
+                //Entity entity = element.GetEntity(schema);
+
                 Data.beams_entities[element] = entity;
                 Data.listST.Add(entity);
                 //entity.Set("Author", "EDECS BIM UNIT");
@@ -157,6 +180,13 @@ namespace Duck_Bank_Builder
                 //        entity.Set($"Core_{i:00}", "False");
                 //    }
                 //}
+
+                using (Transaction t = new Transaction(element.Document, "Write Installation Data"))
+                {
+                    t.Start();
+                    element.SetEntity(entity);
+                    t.Commit();
+                }
             }
         }
 

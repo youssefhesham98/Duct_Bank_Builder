@@ -182,24 +182,59 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static void CreateDB(List<Element> beams,int count, List<int> userselections)
+        public static void CreateDB(Document doc, UIDocument uidoc/*,List<Element> beams,int count, List<int> userselections*/)
         {
-            //Reference pickedRef = uidoc.Selection.PickObject(ObjectType.Element, "Select a structural framing element");
-            //Element element = doc.GetElement(pickedRef);
-            foreach (var duct in beams)
-            {
-                if (duct != null)
-                {
-                    foreach (var userselection in userselections)
-                    {
-                        string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
 
-                        bool status = true;
-                        //Schema schema = EextensibleStorage.CreateSchema();
-                        //EextensibleStorage.WriteInstallationData(duct, count,userselections);
-                        Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
-                        Data.listST.Add(Read_entity_);
+            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            if (schema == null)
+            {
+                schema = EextensibleStorage.CreateSchema();
+            }
+
+            foreach (var duct in pickedRef)
+            {
+                Element element = doc.GetElement(duct);
+                Data.Beams.Add(element);
+                if (element != null)
+                {
+                    //foreach (var userselection in userselections)
+                    //{
+                    //string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+
+                    //bool status = true;
+                    //Schema schema = EextensibleStorage.CreateSchema();
+                    //EextensibleStorage.WriteInstallationData(duct, count,userselections);
+                    //Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
+                    //Data.listST.Add(Read_entity_);
+                    //}
+
+                    Entity entity = new Entity(schema);
+
+                    //Entity entity = element.GetEntity(schema);
+
+                    entity.Set("Author", "EDECS BIM UNIT");
+                    entity.Set("Version", 1);
+                    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                    entity.Set("ElemedID", element.Id);
+
+                    if (element != null)
+                    {
+                        for (int i = 1; i <= 20; i++)
+                        {
+                            entity.Set($"Core_{i:00}", "False");
+                        }
                     }
+
+                    using (Transaction t = new Transaction(element.Document, "Write Installation Data"))
+                    {
+                        t.Start();
+                        element.SetEntity(entity);
+                        t.Commit();
+                    }
+
+                    Data.listST.Add(entity);
+                    Data.beams_entities[element] = entity;
                 }
             }
         }
