@@ -16,6 +16,9 @@ namespace Duck_Bank_Builder
         public static string CreatedOn { get; set; }
         public  string Space { get; set; }
         public  string Origin { get; set; }
+        public string Startpt { get; set; }
+        public string Endpt { get; set; }
+        public string Area { get; set; }
         public  bool IsFilled { get; set; }
         public  int PtsCouunt { get; set; }
         public  int Rows { get; set; }

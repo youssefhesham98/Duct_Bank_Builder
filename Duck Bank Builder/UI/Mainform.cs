@@ -176,7 +176,7 @@ namespace Duck_Bank_Builder.UI
         private void crt_db_Click(object sender, EventArgs e)
         {
             //usersel = Data.userselections;
-            ExCmd.exevt.request = Request.WriteDB;
+            ExCmd.exevt.request = Request.Create_DB;
             ExCmd.exevthan.Raise();
         }
 

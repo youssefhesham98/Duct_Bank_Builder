@@ -235,9 +235,10 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static List<int> GetBankData(Element ele)
+        public static List<int> GetBankData(Element ele, out List<string> ptsdata)
         {
             List<int> data = new List<int>();
+            ptsdata = new List<string>();
             double tolerance = 1e-6;
             Data.startpts_ = new Dictionary<int, XYZ>();
             Data.endpts_ = new Dictionary<int, XYZ>();
@@ -260,6 +261,7 @@ namespace Duck_Bank_Builder
                 {
                     XYZ origin = face.Origin;
                     XYZ axis = face.Axis.Normalize();
+                  
 
                     bool exists = uniqueCylFaces.Any(f =>
                         f.Origin.IsAlmostEqualTo(origin, tolerance) &&
@@ -275,6 +277,9 @@ namespace Duck_Bank_Builder
                 {
                     XYZ axisDir = cylFace.Axis.Normalize();
                     XYZ origin = cylFace.Origin;
+                    ptsdata.Add($"Origin: {origin}, Axis: {axisDir}");
+                    int area = cylFace.Area > 0 ? (int)Math.Round(cylFace.Area) : 0;
+                    ptsdata.Add($"Area: {area}");
 
                     // get the param bounds of the cylinder
                     BoundingBoxUV bb = cylFace.GetBoundingBox();
@@ -283,7 +288,9 @@ namespace Duck_Bank_Builder
 
                     // axis points at both ends
                     XYZ axisStart = origin + axisDir * min.V;
+                    ptsdata.Add($"Start Point: {axisStart}");   
                     XYZ axisEnd = origin + axisDir * max.V;
+                    ptsdata.Add($"End Point: {axisEnd}");
 
                     startorigins.Add(axisStart);
                     endorigins.Add(axisEnd);
