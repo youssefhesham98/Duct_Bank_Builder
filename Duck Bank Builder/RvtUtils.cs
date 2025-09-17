@@ -275,6 +275,9 @@ namespace Duck_Bank_Builder
             List<int> data = new List<int>();
             ptsdata = new List<string>();
             CoresCount = 0;
+            int rows = 0;
+            int columns = 0;
+            int matrix = 0;
             double tolerance = 1e-6;
             //Data.startpts_ = new Dictionary<int, XYZ>();
             //Data.endpts_ = new Dictionary<int, XYZ>();
@@ -356,13 +359,12 @@ namespace Duck_Bank_Builder
                         .Count();
 
                     var ptscount = startorigins.Count;
-                    data.Add(ptscount);
                     CoresCount = ptscount;
                     var rowpts  = uniqueStartZCount;
-                    data.Add(rowpts);
+                    rows = rowpts;
                     var colpts = ptscount / uniqueStartZCount;
-                    data.Add(colpts);
-                    data.Add(rowpts * colpts);
+                    columns = colpts;
+                   
 
                     //Data.points_count = ptscount;
 
@@ -370,7 +372,7 @@ namespace Duck_Bank_Builder
                     //Data.endpts = new XYZ[rowpts, colpts];
 
                     //for (int i = 0; i < rowpts; i++)
-                    //{
+                    //{aq
                     //    for (int j = 0; j < colpts; j++)
                     //    {
                     //        int index = i * colpts + j; // calculate 1D index
@@ -387,6 +389,10 @@ namespace Duck_Bank_Builder
                     //    }
                     //}
                 }
+                data.Add(CoresCount);
+                data.Add(rows);
+                data.Add(columns);
+                data.Add(rows * columns);
             }
             return data;
         }

@@ -23,7 +23,8 @@ namespace Duck_Bank_Builder
 {
     public class EextensibleStorage
     {
-        public static Guid SchemaGuid = new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB");
+        // old -- "D1B2A3C4-E5F6-4789-ABCD-1234567890AB"
+        public static Guid SchemaGuid = new Guid("EA3711B6-7914-4A27-BFA7-9D6973EEB238");
 
         public static Schema CreateSchema()
         {
@@ -42,7 +43,7 @@ namespace Duck_Bank_Builder
             //sb.AddArrayField("CoreValues", typeof(double));
             //sb.AddMapField("CoreMap", typeof(string), typeof(bool));
             //##
-            sb.SetSchemaName("DuctBuilderSchema");
+            sb.SetSchemaName("Duct_BuilderSchema");
             //sb.AddSimpleField("Author", typeof(string));
             //sb.AddSimpleField("Version", typeof(int));
             //sb.AddSimpleField("CreatedOn", typeof(string));
@@ -107,7 +108,7 @@ namespace Duck_Bank_Builder
             //    //Data.Beams.Add(element);
             //}
 
-            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            Schema schema = Schema.Lookup(new Guid("EA3711B6-7914-4A27-BFA7-9D6973EEB238"));
             if (schema == null)
             {
                 schema = CreateSchema();
@@ -126,7 +127,7 @@ namespace Duck_Bank_Builder
                 var schemaGUID = schema.GUID;
                 sb.AppendLine($"GUID: {schemaGUID}");
                 string schemaName = schema.SchemaName;
-                sb.AppendLine($"Schema NAme: {schemaName}");
+                sb.AppendLine($"Schema Name: {schemaName}");
                 int version = 1;
                 sb.AppendLine($"Version: {version}");
                 string createdOn = DateTime.Now.ToString("yyyy-MM-dd HH:mm");
@@ -148,16 +149,18 @@ namespace Duck_Bank_Builder
                     core.Columns = matrix[2];
                     core.Matrix = matrix[3];
                     sb.AppendLine($"Core_{i:00}");
+                    sb.AppendLine("---------------------------");
                     sb.AppendLine($"Space: {core.Space}");
-                    sb.AppendLine($"Origin: {core.Origin}");
-                    sb.AppendLine($"Area: {core.Area}");
-                    sb.AppendLine($"Core Start Point : {core.Startpt}");
-                    sb.AppendLine($"Core End Point: {core.Endpt}");
+                    sb.AppendLine($"{core.Origin}");
+                    sb.AppendLine($"{core.Area}");
+                    sb.AppendLine($"{core.Startpt}");
+                    sb.AppendLine($"{core.Endpt}");
                     sb.AppendLine($"Status: {core.IsFilled}");
-                    sb.AppendLine($"Cores COunt: {core.PtsCouunt}");
+                    sb.AppendLine($"Cores Count: {core.PtsCouunt}");
                     sb.AppendLine($"Rows: {core.Rows}");
                     sb.AppendLine($"Columns: {core.Columns}");
                     sb.AppendLine($"Matrix: {core.Matrix}");
+                    sb.AppendLine("---------------------------");
 
                     cores.Add(core);
                     entity.Set("Cores", sb.ToString());
@@ -187,7 +190,9 @@ namespace Duck_Bank_Builder
                     element.SetEntity(entity);
                     t.Commit();
                 }
+               
             }
+            TaskDialog.Show("Output", sb.ToString());
         }
 
         public static void WriteInstallationData(int userInput, List<Element> beams/*, int pipeCount, List<int> userselections*/)
