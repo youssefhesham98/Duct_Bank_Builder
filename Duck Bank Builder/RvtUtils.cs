@@ -451,7 +451,7 @@ namespace Duck_Bank_Builder
                 var matrix = GetBankData(element, out ptsdata, out CoresCount);
                 for (int i = 0; i < CoresCount; i++)
                 {
-                    if (currentValue.Contains("Status: False") && assigned != 0);
+                    if (currentValue.Contains("Status: False") && assigned != 0)
                     {
                         CoresData core = cores[i];
                         //CoresData core = new CoresData(author, schemaGUID.ToString(), schemaName, version, createdOn);
@@ -479,12 +479,38 @@ namespace Duck_Bank_Builder
                         sb.AppendLine($"Matrix: {core.Matrix}");
                         sb.AppendLine("---------------------------");
 
-                        //cores.Add(core);
                         entity.Set("Cores", sb.ToString());
-                        // already taken → skip
-                        //continue;
-                    } 
-                    assigned--;
+                        assigned--;
+                    }
+                    else
+                    {
+                        CoresData core = cores[i];
+                        core.Space = "0" + "%";
+                        core.Origin = ptsdata[0];
+                        core.Area = ptsdata[1];
+                        core.Startpt = ptsdata[2];
+                        core.Endpt = ptsdata[3];
+                        core.IsFilled = false;
+                        core.PtsCouunt = matrix[0];
+                        core.Rows = matrix[1];
+                        core.Columns = matrix[2];
+                        core.Matrix = matrix[3];
+                        sb.AppendLine($"Core_{i:00}");
+                        sb.AppendLine("---------------------------");
+                        sb.AppendLine($"Space: {core.Space}");
+                        sb.AppendLine($"{core.Origin}");
+                        sb.AppendLine($"{core.Area}");
+                        sb.AppendLine($"{core.Startpt}");
+                        sb.AppendLine($"{core.Endpt}");
+                        sb.AppendLine($"Status: {core.IsFilled}");
+                        sb.AppendLine($"Cores Count: {core.PtsCouunt}");
+                        sb.AppendLine($"Rows: {core.Rows}");
+                        sb.AppendLine($"Columns: {core.Columns}");
+                        sb.AppendLine($"Matrix: {core.Matrix}");
+                        sb.AppendLine("---------------------------");
+                        entity.Set("Cores", sb.ToString());
+                    }
+                    
                 }
 
                 Data.beams_entities[element] = entity;

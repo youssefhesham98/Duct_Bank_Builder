@@ -98,7 +98,7 @@ namespace Duck_Bank_Builder
             return Sc;
         }
 
-        public static void CreateDB(Document doc, UIDocument uidoc)
+        public static IList<Reference> CreateDB(Document doc, UIDocument uidoc)
         {
             StringBuilder sb = new StringBuilder();
             var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
@@ -194,11 +194,14 @@ namespace Duck_Bank_Builder
                
             }
             TaskDialog.Show("Output", sb.ToString());
+            return pickedRef;
         }
 
         public static void WriteInstallationData(Document doc,int userInput, UIDocument uidoc/*,List<Element> beams, int pipeCount, List<int> userselections*/)
         {
-            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
+            var pickedRef = CreateDB(ExCmd.doc, ExCmd.uidoc);
+
+            //var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
 
             Schema schema = Schema.Lookup(new Guid("EA3711B6-7914-4A27-BFA7-9D6973EEB238"));
             if (schema == null)
