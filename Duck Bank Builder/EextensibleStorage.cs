@@ -161,10 +161,8 @@ namespace Duck_Bank_Builder
                     sb.AppendLine($"Columns: {core.Columns}");
                     sb.AppendLine($"Matrix: {core.Matrix}");
                     sb.AppendLine("---------------------------");
-
                     cores.Add(core); 
                 }
-                //##
 
                 //Entity entity = element.GetEntity(schema);
                 entity.Set("Cores", sb.ToString());
@@ -240,9 +238,10 @@ namespace Duck_Bank_Builder
             //entity.Set("Core_20", status);
             #endregion
 
-            // Loop through 20 core fields
             try
             {
+                
+                RvtUtils.SetCoresDta(doc, pickedRef, userInput);
                 #region Assign per beam
 
                 //foreach (var beam in beams)
@@ -290,9 +289,7 @@ namespace Duck_Bank_Builder
                 //    }
                 //}
                 #endregion
-
-                RvtUtils.SetCoresDta(doc, pickedRef, userInput);
-
+                #region Old
                 //int coresPerBeam = userInput;
 
                 //foreach (var beam in beams)
@@ -330,7 +327,7 @@ namespace Duck_Bank_Builder
                 //        t.Commit();
                 //    }
                 //}
-
+                #endregion
                 #region Comparing_Try
 
                 //int coresPerBeam = userInput;
@@ -413,7 +410,6 @@ namespace Duck_Bank_Builder
 
 
                 #endregion
-
                 #region Assign_By_User_Selection
                 //foreach (var sel in userselections)
                 //{
@@ -495,22 +491,7 @@ namespace Duck_Bank_Builder
                 string core_19 = entity.Get<string>("Core_19");
                 string core_20 = entity.Get<string>("Core_20");
 
-                //// Collect the boolean core values
-                //sb.AppendLine($"Author: {author}");
-                //sb.AppendLine($"Version: {version}");
-                //sb.AppendLine($"Created On: {createdOn}");
-                //sb.AppendLine($"ElementId: {elementid}");
-                ////sb.AppendLine($"Origin: ({origin?.X:F3}, {origin?.Y:F3}, {origin?.Z:F3})");
-                //sb.AppendLine();
-                //sb.AppendLine("Core Values:");
-
-                //for (int i = 1; i <= 20; i++)
-                //{
-                //    string coreVal = entity.Get<string>($"Core_{i:00}");
-                //    sb.AppendLine($"  Core_{i:00}: {coreVal}");
-                //}
             }
-            //TaskDialog.Show("Extensible Storage Data", sb.ToString());
             return entity;
         }
 
@@ -524,7 +505,7 @@ namespace Duck_Bank_Builder
             foreach (var entity in entities)
             {
                 if (!entity.IsValid()) continue;
-                Autodesk.Revit.DB.ExtensibleStorage.Schema schema = entity.Schema;
+                Schema schema = entity.Schema;
                 if (schema == null) continue;
 
                 XElement entityNode = new XElement("Entity",

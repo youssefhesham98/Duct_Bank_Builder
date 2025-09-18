@@ -183,94 +183,6 @@ namespace Duck_Bank_Builder
             }
         }
 
-        public static void CreateDB(Document doc, UIDocument uidoc/*,List<Element> beams,int count, List<int> userselections*/)
-        {
-            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
-
-            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
-            if (schema == null)
-            {
-                schema = EextensibleStorage.CreateSchema();
-            }
-
-            foreach (var duct in pickedRef)
-            {
-                Element element = doc.GetElement(duct);
-                Data.Beams.Add(element);
-                if (element != null)
-                {
-                    //foreach (var userselection in userselections)
-                    //{
-                    //string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
-
-                    //bool status = true;
-                    //Schema schema = EextensibleStorage.CreateSchema();
-                    //EextensibleStorage.WriteInstallationData(duct, count,userselections);
-                    //Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
-                    //Data.listST.Add(Read_entity_);
-                    //}
-
-                    Entity entity = new Entity(schema);
-
-                    //Entity entity = element.GetEntity(schema);
-
-                    entity.Set("Author", "EDECS BIM UNIT");
-                    entity.Set("Version", 1);
-                    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
-                    entity.Set("ElemedID", element.Id);
-
-                    if (element != null)
-                    {
-                        for (int i = 1; i <= 20; i++)
-                        {
-                            entity.Set($"Core_{i:00}", "False");
-                        }
-                    }
-
-                    using (Transaction t = new Transaction(element.Document, "Write Installation Data"))
-                    {
-                        t.Start();
-                        element.SetEntity(entity);
-                        t.Commit();
-                    }
-
-                    Data.listST.Add(entity);
-                    Data.beams_entities[element] = entity;
-                }
-            }
-        }
-
-        //public static void WriteDB(Document doc, UIDocument uidoc, int userInput, List<Element> beams, string xml_path, string excel_path)
-        //{
-        //    //string xml_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
-        //    //string excel_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xlsx");
-        //    //string xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
-        //    //string excel_path = @"D:\RevitEntityExport.xlsx";
-        //    var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
-        //    foreach (var ele in pickedRef)
-        //    {
-        //        Element element = doc.GetElement(ele);
-        //        Data.Beams.Add(element);
-        //    }
-
-        //    //Schema schema = EextensibleStorage.CreateSchema();
-        //    EextensibleStorage.WriteInstallationData(userInput, beams);
-        //    foreach (var beam in beams)
-        //    {
-        //        Data.listST.Add(EextensibleStorage.ReadInstallationData(beam));
-        //    }
-
-        //    EextensibleStorage.xmlexporter(Data.listST, xml_path);
-        //    try
-        //    {
-        //        EextensibleStorage.excelexporter(Data.listST, excel_path);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TaskDialog.Show("Error", ex.Message);
-        //    }
-        //}
-
         public static List<int> GetBankData(Element ele, out List<string> ptsdata, out int CoresCount)
         {
             List<int> data = new List<int>();
@@ -522,5 +434,95 @@ namespace Duck_Bank_Builder
                 }  
             }
         }
+
+        #region Old
+        public static void CreateDB(Document doc, UIDocument uidoc/*,List<Element> beams,int count, List<int> userselections*/)
+        {
+            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
+
+            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            if (schema == null)
+            {
+                schema = EextensibleStorage.CreateSchema();
+            }
+
+            foreach (var duct in pickedRef)
+            {
+                Element element = doc.GetElement(duct);
+                Data.Beams.Add(element);
+                if (element != null)
+                {
+                    //foreach (var userselection in userselections)
+                    //{
+                    //string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+
+                    //bool status = true;
+                    //Schema schema = EextensibleStorage.CreateSchema();
+                    //EextensibleStorage.WriteInstallationData(duct, count,userselections);
+                    //Entity Read_entity_ = EextensibleStorage.ReadInstallationData(duct);
+                    //Data.listST.Add(Read_entity_);
+                    //}
+
+                    Entity entity = new Entity(schema);
+
+                    //Entity entity = element.GetEntity(schema);
+
+                    entity.Set("Author", "EDECS BIM UNIT");
+                    entity.Set("Version", 1);
+                    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                    entity.Set("ElemedID", element.Id);
+
+                    if (element != null)
+                    {
+                        for (int i = 1; i <= 20; i++)
+                        {
+                            entity.Set($"Core_{i:00}", "False");
+                        }
+                    }
+
+                    using (Transaction t = new Transaction(element.Document, "Write Installation Data"))
+                    {
+                        t.Start();
+                        element.SetEntity(entity);
+                        t.Commit();
+                    }
+
+                    Data.listST.Add(entity);
+                    Data.beams_entities[element] = entity;
+                }
+            }
+        }
+
+        public static void WriteDB(Document doc, UIDocument uidoc, int userInput, List<Element> beams, string xml_path, string excel_path)
+        {
+            //string xml_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xml");
+            //string excel_path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "RevitEntityExport.xlsx");
+            //string xml_path = @"C:\Users\y.hesham\Desktop\RevitEntityExport.xml";
+            //string excel_path = @"D:\RevitEntityExport.xlsx";
+            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
+            foreach (var ele in pickedRef)
+            {
+                Element element = doc.GetElement(ele);
+                Data.Beams.Add(element);
+            }
+
+            //Schema schema = EextensibleStorage.CreateSchema();
+            //EextensibleStorage.WriteInstallationData(userInput, beams);
+            foreach (var beam in beams)
+            {
+                Data.listST.Add(EextensibleStorage.ReadInstallationData(beam));
+            }
+
+            EextensibleStorage.xmlexporter(Data.listST, xml_path);
+            try
+            {
+                EextensibleStorage.excelexporter(Data.listST, excel_path);
+            }
+            catch (Exception ex)
+            {
+                TaskDialog.Show("Error", ex.Message);
+            }
+        }
+        #endregion
     }
 }
