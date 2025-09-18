@@ -182,28 +182,28 @@ namespace Duck_Bank_Builder.UI
 
         private void over_db_Click(object sender, EventArgs e)
         {
-            string title = savetitle.Text.Trim();
-            string folder = savedirectory.Text.Trim();
+            //string title = savetitle.Text.Trim();
+            //string folder = savedirectory.Text.Trim();
 
-            if (string.IsNullOrEmpty(title))
-            {
-                TaskDialog.Show("Error","Please enter a document title.");
-                return;
-            }
+            //if (string.IsNullOrEmpty(title))
+            //{
+            //    TaskDialog.Show("Error","Please enter a document title.");
+            //    return;
+            //}
 
-            if (string.IsNullOrEmpty(folder))
-            {
-                TaskDialog.Show("Error", "Please enter a path.");
-                return;
-            }
+            //if (string.IsNullOrEmpty(folder))
+            //{
+            //    TaskDialog.Show("Error", "Please enter a path.");
+            //    return;
+            //}
 
-            // Build file paths
-            Data.xml_path = Path.Combine(folder, title + ".xml");
-            Data.excel_path = Path.Combine(folder, title + ".xlsx");
+            //// Build file paths
+            //Data.xml_path = Path.Combine(folder, title + ".xml");
+            //Data.excel_path = Path.Combine(folder, title + ".xlsx");
 
             userselect = int.Parse(userselection.Text);
-            Data.Beams.Clear();
-            Data.listST.Clear();
+            //Data.Beams.Clear();
+            //Data.listST.Clear();
 
             //using (FolderBrowserDialog fbd = new FolderBrowserDialog())
             //{

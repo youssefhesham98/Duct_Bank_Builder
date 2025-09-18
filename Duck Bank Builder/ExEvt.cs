@@ -29,7 +29,8 @@ namespace Duck_Bank_Builder
                     EextensibleStorage.CreateDB(ExCmd.doc,ExCmd.uidoc);
                     break;
                 case Request.WriteDB:
-                    RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc, Mainform.userselect, Data.Beams,Data.xml_path,Data.excel_path);
+                    //RvtUtils.WriteDB(ExCmd.doc, ExCmd.uidoc, Mainform.userselect, Data.Beams,Data.xml_path,Data.excel_path);
+                    EextensibleStorage.WriteInstallationData(ExCmd.doc,Mainform.userselect, ExCmd.uidoc);
                     break;
             }
         }

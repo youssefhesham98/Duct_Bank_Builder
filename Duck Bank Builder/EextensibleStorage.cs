@@ -162,15 +162,16 @@ namespace Duck_Bank_Builder
                     sb.AppendLine($"Matrix: {core.Matrix}");
                     sb.AppendLine("---------------------------");
 
-                    cores.Add(core);
-                    entity.Set("Cores", sb.ToString());
+                    cores.Add(core); 
                 }
                 //##
 
                 //Entity entity = element.GetEntity(schema);
-
+                entity.Set("Cores", sb.ToString());
                 Data.beams_entities[element] = entity;
                 Data.listST.Add(entity);
+                Data.beams_cores[element.Id] = cores;
+
                 //entity.Set("Author", "EDECS BIM UNIT");
                 //entity.Set("Version", 1);
                 //entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
@@ -195,9 +196,11 @@ namespace Duck_Bank_Builder
             TaskDialog.Show("Output", sb.ToString());
         }
 
-        public static void WriteInstallationData(int userInput, List<Element> beams/*, int pipeCount, List<int> userselections*/)
+        public static void WriteInstallationData(Document doc,int userInput, UIDocument uidoc/*,List<Element> beams, int pipeCount, List<int> userselections*/)
         {
-            Schema schema = Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            var pickedRef = uidoc.Selection.PickObjects(ObjectType.Element, "Select a structural framing element");
+
+            Schema schema = Schema.Lookup(new Guid("EA3711B6-7914-4A27-BFA7-9D6973EEB238"));
             if (schema == null)
             {
                 schema = CreateSchema();
@@ -285,43 +288,45 @@ namespace Duck_Bank_Builder
                 //}
                 #endregion
 
-                int coresPerBeam = userInput;
+                RvtUtils.SetCoresDta(doc, pickedRef, userInput);
 
-                foreach (var beam in beams)
-                {
-                    Entity entity = beam.GetEntity(schema);
-                    entity.Set("Author", "EDECS BIM UNIT");
-                    entity.Set("Version", 1);
-                    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
-                    entity.Set("ElemedID", beam.Id);
+                //int coresPerBeam = userInput;
 
-                    int assigned = 0;
+                //foreach (var beam in beams)
+                //{
+                //    Entity entity = beam.GetEntity(schema);
+                //    entity.Set("Author", "EDECS BIM UNIT");
+                //    entity.Set("Version", 1);
+                //    entity.Set("CreatedOn", DateTime.Now.ToString("yyyy-MM-dd HH:mm"));
+                //    entity.Set("ElemedID", beam.Id);
 
-                    // Walk all cores in order
-                    for (int i = 1; i <= 20 && assigned < coresPerBeam; i++)
-                    {
-                        string fieldName = $"Core_{i:00}";
-                        string currentValue = entity.Get<string>(fieldName);
+                //    int assigned = 0;
 
-                        if (currentValue == "True")
-                        {
-                            // already taken → skip
-                            continue;
-                        }
+                //    // Walk all cores in order
+                //    for (int i = 1; i <= 20 && assigned < coresPerBeam; i++)
+                //    {
+                //        string fieldName = $"Core_{i:00}";
+                //        string currentValue = entity.Get<string>(fieldName);
 
-                        // set new one to True
-                        entity.Set(fieldName, "True");
-                        assigned++;
-                    }
+                //        if (currentValue == "True")
+                //        {
+                //            // already taken → skip
+                //            continue;
+                //        }
 
-                    Data.beams_entities[beam] = entity;
-                    using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
-                    {
-                        t.Start();
-                        beam.SetEntity(entity);
-                        t.Commit();
-                    }
-                }
+                //        // set new one to True
+                //        entity.Set(fieldName, "True");
+                //        assigned++;
+                //    }
+
+                //    Data.beams_entities[beam] = entity;
+                //    using (Transaction t = new Transaction(beam.Document, "Write Installation Data"))
+                //    {
+                //        t.Start();
+                //        beam.SetEntity(entity);
+                //        t.Commit();
+                //    }
+                //}
 
                 #region Comparing_Try
 
@@ -453,7 +458,7 @@ namespace Duck_Bank_Builder
 
         public static Entity ReadInstallationData(Element element)
         {
-            Autodesk.Revit.DB.ExtensibleStorage.Schema schema = Autodesk.Revit.DB.ExtensibleStorage.Schema.Lookup(new Guid("D1B2A3C4-E5F6-4789-ABCD-1234567890AB"));
+            Schema schema = Schema.Lookup(new Guid("EA3711B6-7914-4A27-BFA7-9D6973EEB238"));
             if (schema == null) TaskDialog.Show("Error", "Schema Failed.");
 
             StringBuilder sb = new StringBuilder();

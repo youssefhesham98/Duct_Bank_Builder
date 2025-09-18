@@ -35,6 +35,7 @@ namespace Duck_Bank_Builder
         public static List<int> userselections { get; set; }
         public static Dictionary<int, string> corelocations { get; set; }
         public static Dictionary<Element, Entity> beams_entities { get; set; }
+        public static Dictionary<ElementId, List<CoresData>> beams_cores { get; set; }
 
         public static void Intialize()
         {
@@ -56,6 +57,7 @@ namespace Duck_Bank_Builder
             userselections = new List<int>();
             corelocations = new Dictionary<int, string>();
             beams_entities = new Dictionary<Element, Entity>();
+            beams_cores = new Dictionary<ElementId, List<CoresData>>();
 
 
         }
