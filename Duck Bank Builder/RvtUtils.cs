@@ -396,6 +396,7 @@ namespace Duck_Bank_Builder
                     }
                     else
                     {
+                        //continue;
                         CoresData core = cores[i];
                         core.Space = "0" + "%";
                         core.Origin = ptsdata[0];
